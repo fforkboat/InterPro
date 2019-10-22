@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean name="stateBuilder" class="com.fforkboat.scanner.State.StateBuilder" factory-method="getInstance" />
+
+    <bean name="A" factory-bean="stateBuilder" factory-method="createFinalStateWithLoop">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="IDENTIFIER"/>
+        <constructor-arg index="2">
+            <list>
+                <bean class="com.fforkboat.scanner.GeneralChar">
+                    <constructor-arg value="$i$"/>
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="3" value="A"/>
+    </bean>
+
+    <bean name="C1" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="LESS_EQUAL"/>
+        <constructor-arg index="2" value="C1"/>
+    </bean>
+
+    <bean name="C" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <constructor-arg value="="/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="C1" />
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="LESS"/>
+        <constructor-arg index="2" value="C"/>
+    </bean>
+
+    <bean name="D1" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="GREATER_EQUAL"/>
+        <constructor-arg index="2" value="D1"/>
+    </bean>
+
+    <bean name="D" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value="="/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="D1" />
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="GREATER"/>
+        <constructor-arg index="2" value="D"/>
+    </bean>
+
+    <bean name="G1" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="EQUAL"/>
+        <constructor-arg index="2" value="G1"/>
+    </bean>
+
+    <bean name="G" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value="="/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="G1" />
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="ASSIGN"/>
+        <constructor-arg index="2" value="G"/>
+    </bean>
+
+    <bean name="Q+" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="ADD"/>
+        <constructor-arg index="2" value="Q+"/>
+    </bean>
+
+    <bean name="Q-" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="SUBTRACT"/>
+        <constructor-arg index="2" value="Q-"/>
+    </bean>
+
+    <bean name="Q*" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="MULTIPLY"/>
+        <constructor-arg index="2" value="Q*"/>
+    </bean>
+
+    <bean name="Q/" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="DIVIDE"/>
+        <constructor-arg index="2" value="Q/"/>
+    </bean>
+
+    <bean name="Q(" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="LEFT_PARENTHESIS"/>
+        <constructor-arg index="2" value="Q("/>
+    </bean>
+
+    <bean name="Q)" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="RIGHT_PARENTHESIS"/>
+        <constructor-arg index="2" value="Q)"/>
+    </bean>
+
+    <bean name="Q{" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="LEFT_BRACE"/>
+        <constructor-arg index="2" value="Q{"/>
+    </bean>
+
+    <bean name="Q}" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="RIGHT_BRACE"/>
+        <constructor-arg index="2" value="Q}"/>
+    </bean>
+
+    <bean name="QC" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="COMMA"/>
+        <constructor-arg index="2" value="QC"/>
+    </bean>
+
+    <bean name="QS" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="SEMICOLON"/>
+        <constructor-arg index="2" value="QS"/>
+    </bean>
+
+    <bean name="F1" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="UNEQUAL"/>
+        <constructor-arg index="2" value="F1"/>
+    </bean>
+
+    <bean name="F" factory-bean="stateBuilder" factory-method="createIntermediateState">
+        <constructor-arg index="0">
+            <list>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value="="/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="F1" />
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="F"/>
+    </bean>
+
+    <bean name="I" factory-bean="stateBuilder" factory-method="createFinalStateWithLoop">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="NUMBER"/>
+        <constructor-arg index="2">
+            <list>
+                <bean class="com.fforkboat.scanner.GeneralChar">
+                    <constructor-arg value="$d$"/>
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="3" value="I"/>
+    </bean>
+
+    <bean name="H" factory-bean="stateBuilder" factory-method="createFinalStateWithLoop">
+        <constructor-arg index="0">
+            <list>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value="."/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="I" />
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="NUMBER"/>
+        <constructor-arg index="2">
+            <list>
+                <bean class="com.fforkboat.scanner.GeneralChar">
+                    <constructor-arg value="$d$"/>
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="3" value="H"/>
+    </bean>
+
+    <bean name="J1" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="STRING_LITERAL"/>
+        <constructor-arg index="2" value="J1"/>
+    </bean>
+
+    <bean name="J" factory-bean="stateBuilder" factory-method="createIntermediateStateWithLoop">
+        <constructor-arg index="0">
+            <list>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='"'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="J1" />
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1">
+            <list>
+                <bean class="com.fforkboat.scanner.GeneralChar">
+                    <constructor-arg value="$.$"/>
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="2" value="J"/>
+    </bean>
+
+    <bean name="K1" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="ARRAY_DECLARATION"/>
+        <constructor-arg index="2" value="K1"/>
+    </bean>
+
+    <bean name="K3" factory-bean="stateBuilder" factory-method="createFinalState">
+        <constructor-arg index="0">
+            <list>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="ARRAY_OPERATION"/>
+        <constructor-arg index="2" value="K3"/>
+    </bean>
+
+    <bean name="K2" factory-bean="stateBuilder" factory-method="createIntermediateStateWithLoop">
+        <constructor-arg index="0">
+            <list>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value="]"/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="K3" />
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1">
+            <list>
+                <bean class="com.fforkboat.scanner.GeneralChar">
+                    <constructor-arg value='$d$'/>
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="2" value="K2"/>
+    </bean>
+
+    <bean name="K" factory-bean="stateBuilder" factory-method="createIntermediateState">
+        <constructor-arg index="0">
+            <list>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value="]"/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="K1" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='$d$'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="K2" />
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="K"/>
+    </bean>
+
+    <bean name="E" factory-bean="stateBuilder" factory-method="createIntermediateState">
+        <constructor-arg index="0">
+            <list>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value="$l$"/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="A" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='"'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="J" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='['/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="K" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value="&lt;"/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="C" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='>'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="D" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='!'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="F" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='='/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="G" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='+'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="Q+" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='-'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="Q-" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='*'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="Q*" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='/'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="Q/" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='('/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="Q(" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value=')'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="Q)" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='{'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="Q{" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='}'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="Q}" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value=','/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="QC" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value=';'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="QS" />
+                </bean>
+                <bean class="org.javatuples.Pair">
+                    <constructor-arg index="0">
+                        <bean class="com.fforkboat.scanner.GeneralChar">
+                            <constructor-arg value='$d$'/>
+                        </bean>
+                    </constructor-arg>
+                    <constructor-arg index="1" ref="H" />
+                </bean>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value=""/>
+    </bean>
+</beans>
