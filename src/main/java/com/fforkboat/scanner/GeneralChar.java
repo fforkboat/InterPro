@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * “广义”的一个字符
+ * 指示一个状态可以识别的“广义”上的字符。一个“广义”字符可以对应一或多个具体字符。
+ *
+ * 如果一个状态可以识别任意一个字母，在不使用“广义字符”时，需要在该状态的状态转移信息中为每一个字母都添加一个转移情况，非常麻烦
+ * 此时如果用广义字符$l$表示任意一个字母，就可以只用添加一个转移情况
  * */
 class GeneralChar{
     private String generalChar;
@@ -13,6 +16,7 @@ class GeneralChar{
     static final String LETTER = "$l$";
     static final String IDENTIFIER = "$i$";
 
+    // general char的缓存池，因为GeneralChar是不可变的，所以可以放心复用
     private static Map<String, GeneralChar> pool = new HashMap<>();
     static {
         pool.put("$.$", new GeneralChar("$.$"));
@@ -22,7 +26,11 @@ class GeneralChar{
     }
 
     private GeneralChar(String generalChar){ this.generalChar = generalChar; }
-    GeneralChar createGeneralChar(String generalChar){
+
+    /**
+     * 静态工厂方法
+     * */
+    static GeneralChar createGeneralChar(String generalChar){
         if (pool.containsKey(generalChar))
             return pool.get(generalChar);
 
@@ -31,6 +39,9 @@ class GeneralChar{
         return gc;
     }
 
+    /**
+     * 判断一个general char能否识别一个具体的char
+     * */
     boolean canReceive(char c){
         switch (generalChar) {
             case "$.$":

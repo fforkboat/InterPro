@@ -13,7 +13,7 @@
         <constructor-arg index="1" value="IDENTIFIER"/>
         <constructor-arg index="2">
             <list>
-                <bean class="com.fforkboat.scanner.GeneralChar">
+                <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                     <constructor-arg value="$i$"/>
                 </bean>
             </list>
@@ -35,7 +35,7 @@
             <list>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                         <constructor-arg value="="/>
                         </bean>
                     </constructor-arg>
@@ -61,7 +61,7 @@
             <list>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value="="/>
                         </bean>
                     </constructor-arg>
@@ -87,7 +87,7 @@
             <list>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value="="/>
                         </bean>
                     </constructor-arg>
@@ -203,7 +203,7 @@
             <list>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value="="/>
                         </bean>
                     </constructor-arg>
@@ -222,7 +222,7 @@
         <constructor-arg index="1" value="NUMBER"/>
         <constructor-arg index="2">
             <list>
-                <bean class="com.fforkboat.scanner.GeneralChar">
+                <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                     <constructor-arg value="$d$"/>
                 </bean>
             </list>
@@ -235,7 +235,7 @@
             <list>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value="."/>
                         </bean>
                     </constructor-arg>
@@ -246,7 +246,7 @@
         <constructor-arg index="1" value="NUMBER"/>
         <constructor-arg index="2">
             <list>
-                <bean class="com.fforkboat.scanner.GeneralChar">
+                <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                     <constructor-arg value="$d$"/>
                 </bean>
             </list>
@@ -268,7 +268,7 @@
             <list>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='"'/>
                         </bean>
                     </constructor-arg>
@@ -278,7 +278,7 @@
         </constructor-arg>
         <constructor-arg index="1">
             <list>
-                <bean class="com.fforkboat.scanner.GeneralChar">
+                <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                     <constructor-arg value="$.$"/>
                 </bean>
             </list>
@@ -309,7 +309,7 @@
             <list>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value="]"/>
                         </bean>
                     </constructor-arg>
@@ -319,7 +319,7 @@
         </constructor-arg>
         <constructor-arg index="1">
             <list>
-                <bean class="com.fforkboat.scanner.GeneralChar">
+                <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                     <constructor-arg value='$d$'/>
                 </bean>
             </list>
@@ -332,7 +332,7 @@
             <list>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value="]"/>
                         </bean>
                     </constructor-arg>
@@ -340,7 +340,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='$d$'/>
                         </bean>
                     </constructor-arg>
@@ -356,7 +356,7 @@
             <list>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value="$l$"/>
                         </bean>
                     </constructor-arg>
@@ -364,7 +364,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='"'/>
                         </bean>
                     </constructor-arg>
@@ -372,7 +372,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='['/>
                         </bean>
                     </constructor-arg>
@@ -380,7 +380,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value="&lt;"/>
                         </bean>
                     </constructor-arg>
@@ -388,7 +388,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='>'/>
                         </bean>
                     </constructor-arg>
@@ -396,7 +396,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='!'/>
                         </bean>
                     </constructor-arg>
@@ -404,7 +404,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='='/>
                         </bean>
                     </constructor-arg>
@@ -412,7 +412,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='+'/>
                         </bean>
                     </constructor-arg>
@@ -420,7 +420,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='-'/>
                         </bean>
                     </constructor-arg>
@@ -428,7 +428,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='*'/>
                         </bean>
                     </constructor-arg>
@@ -436,7 +436,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='/'/>
                         </bean>
                     </constructor-arg>
@@ -444,7 +444,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='('/>
                         </bean>
                     </constructor-arg>
@@ -452,7 +452,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value=')'/>
                         </bean>
                     </constructor-arg>
@@ -460,7 +460,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='{'/>
                         </bean>
                     </constructor-arg>
@@ -468,7 +468,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='}'/>
                         </bean>
                     </constructor-arg>
@@ -476,7 +476,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value=','/>
                         </bean>
                     </constructor-arg>
@@ -484,7 +484,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value=';'/>
                         </bean>
                     </constructor-arg>
@@ -492,7 +492,7 @@
                 </bean>
                 <bean class="org.javatuples.Pair">
                     <constructor-arg index="0">
-                        <bean class="com.fforkboat.scanner.GeneralChar">
+                        <bean class="com.fforkboat.scanner.GeneralChar" factory-method="createGeneralChar">
                             <constructor-arg value='$d$'/>
                         </bean>
                     </constructor-arg>

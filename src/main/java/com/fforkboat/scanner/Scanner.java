@@ -16,7 +16,6 @@ public class Scanner {
         return scanner;
     }
 
-    private State startState;
     private List<Token> outputTokens = new ArrayList<>();
     private List<CompileError> errors = new ArrayList<>();
 
@@ -34,7 +33,6 @@ public class Scanner {
         if (startState == null)
             throw new IllegalArgumentException("Start state should not be null.");
 
-        this.startState = startState;
         this.outputTokens.clear();
         this.errors.clear();
 
@@ -53,7 +51,7 @@ public class Scanner {
                     while (c == ' ')
                         c = line.charAt(++i);
 
-                    State state = this.startState;
+                    State state = startState;
                     StringBuilder builder = new StringBuilder();
                     while (state.canReceive(c)){
                         builder.append(c);

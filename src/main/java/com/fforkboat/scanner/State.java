@@ -7,13 +7,18 @@ import java.util.*;
 
 /**
  * 一个State对象代表自动机中的一个状态。
+ * State对象是不可变的，创建之后无法改变其数据成员。
+ *
 * */
 class State {
     private String name;
     private boolean isFinalState;
+    // state所对应的token类型，当该状态是中间状态时，correspondingTokeType为null
     private TokenType correspondingTokeType;
+    // state的状态转移信息，接收一个GeneralChar后，进入下一个state
     private List<Pair<GeneralChar, State>> stateTransferList;
 
+    // State的工厂类，用于创建各种state
     static class StateBuilder{
         private StateBuilder(){}
         private static StateBuilder stateBuilder = new StateBuilder();
@@ -21,10 +26,17 @@ class State {
             return stateBuilder;
         }
 
+
+        /**
+         * 创建一个intermediate state，该state不存在环(接收一个GeneralChar后的目标state是自己)
+         * */
         State createIntermediateState(List<Pair<GeneralChar, State>> stateTransfer, String name){
             return new State(stateTransfer, false, null, name);
         }
 
+        /**
+         * 创建一个intermediate state，该state存在环
+         * */
         State createIntermediateStateWithLoop(List<Pair<GeneralChar, State>> stateTransfer, GeneralChar[] charsLeadToLoop, String name){
             State state = new State();
             for (GeneralChar c : charsLeadToLoop) {
@@ -35,10 +47,16 @@ class State {
             return state;
         }
 
+        /**
+         * 创建一个final state，该state不存在环(接收一个GeneralChar后的目标state是自己)
+         */
         State createFinalState(List<Pair<GeneralChar, State>> stateTransfer, TokenType type, String name){
             return new State(stateTransfer, true, type, name);
         }
 
+        /**
+         * 创建一个final state，该state存在环
+         * */
         State createFinalStateWithLoop(List<Pair<GeneralChar, State>> stateTransfer, TokenType type, GeneralChar[] charsLeadToLoop, String name){
             State state = new State();
             for (GeneralChar c : charsLeadToLoop) {
@@ -76,6 +94,9 @@ class State {
         return isFinalState;
     }
 
+    /**
+     * 判断state是否能接受字符c
+     * */
     boolean canReceive(char c){
         for (Pair<GeneralChar, State> pair :
                 stateTransferList) {
@@ -86,6 +107,10 @@ class State {
         return false;
     }
 
+    /**
+     * state在接受字符c后进入的状态
+     * 如果不能接受c，返回null
+     * */
     State getNextState(char c){
         int count = 0;
         State state = null;

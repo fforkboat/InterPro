@@ -3,6 +3,10 @@ package com.fforkboat.scanner;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * 创建Token的静态工厂类，通过该类可以创建所有种类的token
+ * */
 class TokenFactory {
     private static Map<TokenType, NormalToken> TokenPool = new HashMap<>();
 
