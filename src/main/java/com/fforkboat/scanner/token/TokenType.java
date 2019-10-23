@@ -1,10 +1,11 @@
-package com.fforkboat.scanner;
+package com.fforkboat.scanner.token;
 
 public enum TokenType {
     IDENTIFIER,
     NUMBER,
     STRING_LITERAL,
     ARRAY_DECLARATION,
+    VARIABLE_DECLARATION,
 
     IF,
     ELSE,
@@ -12,10 +13,6 @@ public enum TokenType {
     FOR,
     BREAK,
     CONTINUE,
-    INT,
-    DOUBLE,
-    BOOL,
-    STRING,
     TRUE,
     FALSE,
     FUNCTION,
@@ -25,6 +22,7 @@ public enum TokenType {
     SUBTRACT,
     MULTIPLY,
     DIVIDE,
+    RELATIONAL_OPERATOR,
     LESS,
     LESS_EQUAL,
     GREATER,
@@ -36,12 +34,8 @@ public enum TokenType {
 
     LEFT_PARENTHESIS,
     RIGHT_PARENTHESIS,
-    LEFT_BRACKET,
-    RIGHT_BRACKET,
     LEFT_BRACE,
     RIGHT_BRACE,
     SEMICOLON,
     COMMA,
-
-    QUOTATION
 }

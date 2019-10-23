@@ -5,6 +5,11 @@ import java.util.*;
 
 import com.fforkboat.common.CompileError;
 import com.fforkboat.common.ValueTable;
+import com.fforkboat.common.VariableType;
+import com.fforkboat.scanner.token.RelationalOperatorType;
+import com.fforkboat.scanner.token.Token;
+import com.fforkboat.scanner.token.TokenFactory;
+import com.fforkboat.scanner.token.TokenType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
@@ -20,6 +25,7 @@ public class Scanner {
     private List<CompileError> errors = new ArrayList<>();
 
     private static String[] keywords = {"if", "else", "while", "for", "break", "continue", "int", "double", "bool", "string", "true", "false", "function", "return"};
+    private static String[] variableDeclarationKeywords = {"int", "double", "bool", "string"};
 
     public static void main(String[] args) throws IOException {
 
@@ -64,24 +70,28 @@ public class Scanner {
 
                         c = line.charAt(++i);
                     }
+                    String word = builder.toString();
                     if (state.isFinalState()){
                         Token token;
                         switch (state.getCorrespondingTokeType()){
                             case IDENTIFIER:
-                                if (Arrays.asList(keywords).contains(builder.toString())){
-                                    TokenType tokenType = TokenType.valueOf(builder.toString().toUpperCase());
+                                if (Arrays.asList(variableDeclarationKeywords).contains(word)){
+                                    token = TokenFactory.createVariableDeclarationToken(VariableType.valueOf(word.toUpperCase()));
+                                }
+                                else if (Arrays.asList(keywords).contains(word)){
+                                    TokenType tokenType = TokenType.valueOf(word.toUpperCase());
                                     token = TokenFactory.createNormalToken(tokenType);
                                 }
                                 else{
-                                    if (builder.toString().charAt(builder.length() - 1) == '_'){
-                                        errors.add(new CompileError("Illegal identifier name:" + builder.toString(), rowCount));
+                                    if (word.charAt(builder.length() - 1) == '_'){
+                                        errors.add(new CompileError("Illegal identifier name:" + word, rowCount));
                                         // TODO 处理报错
                                     }
-                                    token = TokenFactory.createPointerToken(TokenType.IDENTIFIER, ValueTable.getValueTable().getVariableIndex(builder.toString()));
+                                    token = TokenFactory.createPointerToken(TokenType.IDENTIFIER, ValueTable.getValueTable().getVariableIndex(word));
                                 }
                                 break;
                             case NUMBER:
-                                token = TokenFactory.createPointerToken(TokenType.NUMBER, ValueTable.getValueTable().getNumberIndex(builder.toString()));
+                                token = TokenFactory.createPointerToken(TokenType.NUMBER, ValueTable.getValueTable().getNumberIndex(word));
                                 break;
                             case SEMICOLON:
                                 token = TokenFactory.createSemicolonToken(rowCount);
@@ -96,6 +106,9 @@ public class Scanner {
                                 String literal = builder.length() > 2 ? builder.substring(1, builder.length()) : "";
                                 token = TokenFactory.createPointerToken(TokenType.STRING_LITERAL, ValueTable.getValueTable().getStringIndex(literal));
                                 break;
+                            case RELATIONAL_OPERATOR:
+                                token = TokenFactory.createRelationalOperatorToken(RelationalOperatorType.getInstance(word));
+                                break;
                             default:
                                 token = TokenFactory.createNormalToken(state.getCorrespondingTokeType());
                         }
@@ -104,7 +117,7 @@ public class Scanner {
                     }
                     else{
                         // TODO: 处理报错
-                        errors.add(new CompileError("Can not recognize symbol: " + builder.toString(), rowCount));
+                        errors.add(new CompileError("Can not recognize symbol: " + word, rowCount));
                     }
 
                 }

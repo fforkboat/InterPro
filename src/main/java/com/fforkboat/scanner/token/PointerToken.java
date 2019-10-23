@@ -1,4 +1,4 @@
-package com.fforkboat.scanner;
+package com.fforkboat.scanner.token;
 
 /**
  * 这类token带有指向符号表的指针

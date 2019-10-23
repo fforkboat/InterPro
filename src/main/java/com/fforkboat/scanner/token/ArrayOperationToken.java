@@ -1,4 +1,4 @@
-package com.fforkboat.scanner;
+package com.fforkboat.scanner.token;
 
 
 /**

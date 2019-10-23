@@ -26,7 +26,7 @@
             <list>
             </list>
         </constructor-arg>
-        <constructor-arg index="1" value="LESS_EQUAL"/>
+        <constructor-arg index="1" value="RELATIONAL_OPERATOR"/>
         <constructor-arg index="2" value="C1"/>
     </bean>
 
@@ -43,7 +43,7 @@
                 </bean>
             </list>
         </constructor-arg>
-        <constructor-arg index="1" value="LESS"/>
+        <constructor-arg index="1" value="RELATIONAL_OPERATOR"/>
         <constructor-arg index="2" value="C"/>
     </bean>
 
@@ -52,7 +52,7 @@
             <list>
             </list>
         </constructor-arg>
-        <constructor-arg index="1" value="GREATER_EQUAL"/>
+        <constructor-arg index="1" value="RELATIONAL_OPERATOR"/>
         <constructor-arg index="2" value="D1"/>
     </bean>
 
@@ -69,7 +69,7 @@
                 </bean>
             </list>
         </constructor-arg>
-        <constructor-arg index="1" value="GREATER"/>
+        <constructor-arg index="1" value="RELATIONAL_OPERATOR"/>
         <constructor-arg index="2" value="D"/>
     </bean>
 
@@ -78,7 +78,7 @@
             <list>
             </list>
         </constructor-arg>
-        <constructor-arg index="1" value="EQUAL"/>
+        <constructor-arg index="1" value="RELATIONAL_OPERATOR"/>
         <constructor-arg index="2" value="G1"/>
     </bean>
 
@@ -194,7 +194,7 @@
             <list>
             </list>
         </constructor-arg>
-        <constructor-arg index="1" value="UNEQUAL"/>
+        <constructor-arg index="1" value="RELATIONAL_OPERATOR"/>
         <constructor-arg index="2" value="F1"/>
     </bean>
 

@@ -1,5 +1,6 @@
 package com.fforkboat.scanner;
 
+import com.fforkboat.scanner.token.TokenType;
 import org.javatuples.Pair;
 
 import java.util.*;

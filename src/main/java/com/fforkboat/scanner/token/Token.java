@@ -1,10 +1,10 @@
-package com.fforkboat.scanner;
+package com.fforkboat.scanner.token;
 
 
 /**
  * 所有token类的抽象基类
  * */
-abstract class Token {
+public abstract class Token {
     private TokenType tokenType;
     protected Token(TokenType tokenType){
         this.tokenType = tokenType;

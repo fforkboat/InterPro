@@ -1,4 +1,8 @@
 string s = "abc;"
 int[] ints = {1, 2, 3};
 double d = 6.5;
-s ! d;
+s != d;
+a > b;
+c >= b;
+a < c;
+a <= c;
