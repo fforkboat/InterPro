@@ -6,7 +6,8 @@ import org.javatuples.Pair;
 
 public class ValueTable {
     private List<Variable> variables = new ArrayList<>();
-    private List<Double> numbers = new ArrayList<>();
+    private List<Double> doubles = new ArrayList<>();
+    private List<Integer> integers = new ArrayList<>();
     private List<String> strings = new ArrayList<>();
 
     private ValueTable(){}
@@ -31,17 +32,30 @@ public class ValueTable {
         return variables.get(index);
     }
 
-    public int getNumberIndex(String number){
-        Double num = Double.valueOf(number);
-        if (numbers.contains(num))
-            return numbers.indexOf(num);
+    public int getIntegerIndex(String number){
+        Integer num = Integer.valueOf(number);
+        if (integers.contains(num))
+            return integers.indexOf(num);
 
-        numbers.add(num);
-        return numbers.size() - 1;
+        integers.add(num);
+        return integers.size() - 1;
     }
 
-    public Double getNumber(int index){
-        return numbers.get(index);
+    public Integer getInteger(int index){
+        return integers.get(index);
+    }
+
+    public int getDoubleIndex(String number){
+        Double num = Double.valueOf(number);
+        if (doubles.contains(num))
+            return doubles.indexOf(num);
+
+        doubles.add(num);
+        return doubles.size() - 1;
+    }
+
+    public Double getDouble(int index){
+        return doubles.get(index);
     }
 
     public int getStringIndex(String string){

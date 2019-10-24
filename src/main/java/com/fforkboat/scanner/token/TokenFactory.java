@@ -1,9 +1,6 @@
 package com.fforkboat.scanner.token;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fforkboat.common.VariableType;
+import java.util.List;
 
 /**
  * 创建Token的静态工厂类。
@@ -11,41 +8,43 @@ import com.fforkboat.common.VariableType;
  * 所有的工厂方法都能保证每个创建的token是合理的，如不会出现PointerToken的TokenType是TokenType.ADD的情况
  * */
 public class TokenFactory {
-    // NormalToken的缓存池。Token类是不可变的，可以随意复用。
-    // TODO： 其他类型的token其实也可以缓存，但是会有点麻烦，以后有空可以实现看看
-    private static Map<TokenType, NormalToken> TokenPool = new HashMap<>();
+    private static void checkTokenType(Class tokenClass, TokenType type){
+        boolean isPointerToken = type == TokenType.IDENTIFIER || type == TokenType.DOUBLE_LITERAL || type == TokenType.INT_LITERAL || type == TokenType.STRING_LITERAL;
 
-    public static NormalToken createNormalToken(TokenType type){
-        if (type == TokenType.IDENTIFIER || type == TokenType.NUMBER || type == TokenType.SEMICOLON)
-            throw new IllegalArgumentException("NormalToken type:" + type.name() + " should not be created by this method.");
+        if (type == TokenType.ARRAY_OPERATION || (tokenClass.equals(NormalToken.class) && isPointerToken) || (tokenClass.equals(PointerToken.class) && !isPointerToken))
+            throw new IllegalArgumentException("Token type:" + type.name() + " should not be created by this method.");
 
-        if (TokenPool.containsKey(type))
-            return TokenPool.get(type);
-
-        NormalToken token = new NormalToken(type);
-        TokenPool.put(type, token);
-        return token;
     }
 
-    public static PointerToken createPointerToken(TokenType type, int pointer){
-        if (!(type == TokenType.IDENTIFIER || type == TokenType.NUMBER || type == TokenType.STRING_LITERAL))
-            throw new IllegalArgumentException("The token type for token with pointer should be confined in " +
-                    "TokenType.IDENTIFIER, TokenType.NUMBER, TokenType.STRING_LITERAL");
+    public static NormalToken createNormalToken(TokenType type, int lineIndex){
+        checkTokenType(NormalToken.class, type);
 
-        return new PointerToken(type, pointer);
+        return new NormalToken(type, lineIndex);
     }
 
-    public static SemicolonToken createSemicolonToken(int position){
-        return new SemicolonToken(position);
+    public static NormalToken createNormalToken(TokenType type, int lineIndex, ClusterFeature[] features){
+        checkTokenType(NormalToken.class, type);
+
+        return new NormalToken(type, lineIndex, features);
     }
 
-    public static ArrayOperationToken createArrayOperationToken(int index) {return new ArrayOperationToken(index);}
+    public static PointerToken createPointerToken(TokenType type, int lineIndex, int pointer){
+        checkTokenType(PointerToken.class, type);
 
-    public static VariableDeclarationToken createVariableDeclarationToken(VariableType type){
-        return new VariableDeclarationToken(type);
+        return new PointerToken(type, lineIndex, pointer);
     }
 
-    public static RelationalOperatorToken createRelationalOperatorToken(RelationalOperatorType type){
-        return new RelationalOperatorToken(type);
+    public static PointerToken createPointerToken(TokenType type, int lineIndex, ClusterFeature[] features, int pointer){
+        checkTokenType(PointerToken.class, type);
+
+        return new PointerToken(type, lineIndex, features, pointer);
+    }
+
+    public static ArrayOperationToken createArrayOperationToken(int lineIndex, int operationIndex) {
+        return new ArrayOperationToken(lineIndex, operationIndex);
+    }
+
+    public static ArrayOperationToken createArrayOperationToken(int lineIndex, ClusterFeature[] features, int operationIndex) {
+        return new ArrayOperationToken(lineIndex, features, operationIndex);
     }
 }

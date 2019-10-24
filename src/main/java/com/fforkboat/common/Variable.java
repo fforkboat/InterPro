@@ -28,9 +28,17 @@ public class Variable {
     }
 
     public String getValue() {
+        if (!isAssignedType)
+            // TODO 出错处理
+            return null;
+
         return value;
     }
     public void setValue(String value) {
+        if (!isAssignedType)
+            // TODO 出错处理
+            return;
+
         this.value = value;
     }
 }

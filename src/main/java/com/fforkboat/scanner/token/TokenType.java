@@ -2,9 +2,18 @@ package com.fforkboat.scanner.token;
 
 public enum TokenType {
     IDENTIFIER,
-    NUMBER,
+    INT_LITERAL,
+    DOUBLE_LITERAL,
+    NUMBER_LITERAL,
+
     STRING_LITERAL,
     ARRAY_DECLARATION,
+
+    INT,
+    DOUBLE,
+    STRING,
+    BOOL,
+
     VARIABLE_DECLARATION,
 
     IF,
@@ -22,7 +31,6 @@ public enum TokenType {
     SUBTRACT,
     MULTIPLY,
     DIVIDE,
-    RELATIONAL_OPERATOR,
     LESS,
     LESS_EQUAL,
     GREATER,
@@ -37,5 +45,24 @@ public enum TokenType {
     LEFT_BRACE,
     RIGHT_BRACE,
     SEMICOLON,
-    COMMA,
+    COMMA,;
+
+    public static TokenType getTypeForRelationalOperator(String operator){
+        switch (operator){
+            case ">":
+                return GREATER;
+            case ">=":
+                return GREATER_EQUAL;
+            case "<":
+                return LESS;
+            case "<=":
+                return LESS_EQUAL;
+            case "==":
+                return EQUAL;
+            case "!=":
+                return UNEQUAL;
+            default:
+                return null;
+        }
+    }
 }
