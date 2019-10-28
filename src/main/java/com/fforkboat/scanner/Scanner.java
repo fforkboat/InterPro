@@ -4,8 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import com.fforkboat.common.CompileError;
-import com.fforkboat.common.ValueTable;
-import com.fforkboat.scanner.token.ClusterFeature;
+import com.fforkboat.common.ConstValueTable;
 import com.fforkboat.scanner.token.Token;
 import com.fforkboat.scanner.token.TokenFactory;
 import com.fforkboat.scanner.token.TokenType;
@@ -24,7 +23,6 @@ public class Scanner {
     private List<CompileError> errors = new ArrayList<>();
 
     private static String[] keywords = {"if", "else", "while", "for", "break", "continue", "int", "double", "bool", "string", "true", "false", "function", "return"};
-    private static String[] variableDeclarationKeywords = {"int", "double", "bool", "string"};
 
     public static void main(String[] args) throws IOException {
 
@@ -74,9 +72,8 @@ public class Scanner {
                         Token token;
                         switch (state.getCorrespondingTokeType()){
                             case IDENTIFIER:
-                                if (Arrays.asList(variableDeclarationKeywords).contains(word)){
-                                    token = TokenFactory.createNormalToken(TokenType.valueOf(word.toUpperCase()), rowCount,
-                                            new ClusterFeature[]{ClusterFeature.VARIABLE_DECLARATION});
+                                if (word.equals("true") || word.equals("false")){
+                                    token = TokenFactory.createLiteralToken(TokenType.BOOL_LITERAL, rowCount, ConstValueTable.getConstValueTable().getBoolIndex(word));
                                 }
                                 else if (Arrays.asList(keywords).contains(word)){
                                     TokenType tokenType = TokenType.valueOf(word.toUpperCase());
@@ -87,21 +84,19 @@ public class Scanner {
                                         errors.add(new CompileError("Illegal identifier name:" + word, rowCount));
                                         // TODO 处理报错
                                     }
-                                    token = TokenFactory.createPointerToken(TokenType.IDENTIFIER, rowCount, ValueTable.getValueTable().getVariableIndex(word));
+                                    token = TokenFactory.createIdentifierToken(rowCount, word);
                                 }
                                 break;
                             case DOUBLE_LITERAL:
-                                token = TokenFactory.createPointerToken(TokenType.DOUBLE_LITERAL, rowCount,
-                                        new ClusterFeature[]{ClusterFeature.NUMBER}, ValueTable.getValueTable().getDoubleIndex(word));
+                                token = TokenFactory.createLiteralToken(TokenType.DOUBLE_LITERAL, rowCount, ConstValueTable.getConstValueTable().getDoubleIndex(word));
                                 break;
                             case INT_LITERAL:
-                                token = TokenFactory.createPointerToken(TokenType.INT_LITERAL, rowCount,
-                                        new ClusterFeature[]{ClusterFeature.NUMBER},  ValueTable.getValueTable().getIntegerIndex(word));
+                                token = TokenFactory.createLiteralToken(TokenType.INT_LITERAL, rowCount, ConstValueTable.getConstValueTable().getIntegerIndex(word));
                                 break;
                             case STRING_LITERAL:
                                 // 识别得到的单元一定符合"literal"的格式，提取出literal
                                 String literal = builder.length() > 2 ? builder.substring(1, builder.length()) : "";
-                                token = TokenFactory.createPointerToken(TokenType.STRING_LITERAL, rowCount, ValueTable.getValueTable().getStringIndex(literal));
+                                token = TokenFactory.createLiteralToken(TokenType.STRING_LITERAL, rowCount, ConstValueTable.getConstValueTable().getStringIndex(literal));
                                 break;
                             case ARRAY_OPERATION:
                                 // 识别得到的单元一定符合[index]的格式，提取出index
@@ -115,7 +110,7 @@ public class Scanner {
                             case LESS_EQUAL:
                             case EQUAL:
                             case UNEQUAL:
-                                token = TokenFactory.createNormalToken(TokenType.getTypeForRelationalOperator(word), rowCount, new ClusterFeature[]{ClusterFeature.RELATIONAL_OPERATOR});
+                                token = TokenFactory.createNormalToken(TokenType.getTypeForRelationalOperator(word), rowCount);
                                 break;
                             default:
                                 token = TokenFactory.createNormalToken(state.getCorrespondingTokeType(), rowCount);
@@ -132,7 +127,8 @@ public class Scanner {
             }
             
         }
-        
+
+        // TODO 错误处理
         if (errors.size() > 0){
             System.out.println(errors);
         }

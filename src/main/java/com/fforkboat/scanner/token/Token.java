@@ -10,17 +10,14 @@ import java.util.List;
  * 该类是不可变的
  * */
 public abstract class Token {
+    // token的类型
     private TokenType tokenType;
+    // 这个token在源程序中的行数
     private int lineIndexOfSourceProgram;
-    private List<ClusterFeature> clusterFeatures = new ArrayList<>();
+    // 这个token可能具有的用于聚类的特性
 
     protected Token(TokenType tokenType, int lineIndex){
         this.tokenType = tokenType;
-    }
-    protected Token(TokenType tokenType, int lineIndex, ClusterFeature[] clusterFeatures){
-        this(tokenType, lineIndex);
-
-        this.clusterFeatures.addAll(Arrays.asList(clusterFeatures));
     }
 
     public TokenType getTokenType(){
@@ -29,10 +26,6 @@ public abstract class Token {
 
     public int getLineIndexOfSourceProgram() {
         return lineIndexOfSourceProgram;
-    }
-
-    public boolean hasClusterFeature(ClusterFeature feature){
-        return clusterFeatures.contains(feature);
     }
 
     @Override

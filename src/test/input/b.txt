@@ -1,4 +1,5 @@
 string s = "abc;"
+A = true;
 int[] ints = {1, 2, 3};
 double d = 6.5;
 s != d;
