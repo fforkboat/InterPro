@@ -1,21 +1,22 @@
 package com.fforkboat.scanner.token;
 
-public enum TokenType {
+import com.fforkboat.parser.symbol.TerminalSymbolIndicator;
+
+public enum TokenType implements TerminalSymbolIndicator {
     IDENTIFIER,
-    ARRAY_DECLARATION,
     ASSIGN,
     ARRAY_OPERATION,
 
-    INT_LITERAL,
-    DOUBLE_LITERAL,
+    INT_LITERAL(new ClusterFeature[]{ClusterFeature.NUMBER}),
+    DOUBLE_LITERAL(new ClusterFeature[]{ClusterFeature.NUMBER}),
     STRING_LITERAL,
     BOOL_LITERAL,
 
-    INT(new ClusterFeature[]{ClusterFeature.NUMBER, ClusterFeature.VARIABLE_DECLARATION, ClusterFeature.ARGUMENT_TYPE, ClusterFeature.RETURN_TYPE}),
-    DOUBLE(new ClusterFeature[]{ClusterFeature.NUMBER, ClusterFeature.VARIABLE_DECLARATION, ClusterFeature.ARGUMENT_TYPE, ClusterFeature.RETURN_TYPE}),
-    STRING(new ClusterFeature[]{ClusterFeature.VARIABLE_DECLARATION, ClusterFeature.ARGUMENT_TYPE, ClusterFeature.RETURN_TYPE}),
-    BOOL(new ClusterFeature[]{ClusterFeature.VARIABLE_DECLARATION, ClusterFeature.ARGUMENT_TYPE, ClusterFeature.RETURN_TYPE}),
-    VOID(new ClusterFeature[]{ClusterFeature.RETURN_TYPE}),
+    INT(new ClusterFeature[]{ClusterFeature.TYPE_DECLARATION}),
+    DOUBLE(new ClusterFeature[]{ClusterFeature.TYPE_DECLARATION}),
+    STRING(new ClusterFeature[]{ClusterFeature.TYPE_DECLARATION}),
+    BOOL(new ClusterFeature[]{ClusterFeature.TYPE_DECLARATION}),
+    VOID,
     IF,
     ELSE,
     WHILE,
@@ -39,12 +40,14 @@ public enum TokenType {
     EQUAL(new ClusterFeature[]{ClusterFeature.RELATIONAL_OPERATOR}),
     UNEQUAL(new ClusterFeature[]{ClusterFeature.RELATIONAL_OPERATOR}),
 
-    LEFT_PARENTHESIS,
-    RIGHT_PARENTHESIS,
-    LEFT_BRACE,
-    RIGHT_BRACE,
-    SEMICOLON,
-    COMMA,;
+    LEFT_PARENTHESIS, // (
+    RIGHT_PARENTHESIS, // )
+    LEFT_BRACE, // {
+    RIGHT_BRACE, // }
+    LEFT_BRACKET, // [
+    RIGHT_BRACKET, //]
+    SEMICOLON, //;
+    COMMA,; //,
 
     private ClusterFeature[] clusterFeatures;
 
@@ -84,11 +87,9 @@ public enum TokenType {
      * 某些token在语法分析过程中有相似的特性。比如 <LESS> <LESS_EQUAL> 这类表示关系的token，在语法分析器看来是一样的
      * 为token设置聚类特性可以减少语法分析中文法的产生式
      * */
-    public enum ClusterFeature {
+    public static enum ClusterFeature implements TerminalSymbolIndicator {
         RELATIONAL_OPERATOR,
-        VARIABLE_DECLARATION,
+        TYPE_DECLARATION,
         NUMBER,
-        ARGUMENT_TYPE,
-        RETURN_TYPE
     }
 }

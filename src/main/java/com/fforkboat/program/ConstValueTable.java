@@ -1,4 +1,4 @@
-package com.fforkboat.common;
+package com.fforkboat.program;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,13 +1,14 @@
 package com.fforkboat.common;
 
-public enum VariableType {
+public enum  ReturnType {
     INT,
     DOUBLE,
-    BOOL,
     STRING,
+    BOOL,
+    VOID,
 
     INT_ARRAY,
     DOUBLE_ARRAY,
-    BOOL_ARRAY,
-    STRING_ARRAY
+    STRING_ARRAY,
+    BOOL_ARRAY
 }

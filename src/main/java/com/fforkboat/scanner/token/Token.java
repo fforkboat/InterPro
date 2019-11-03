@@ -18,6 +18,7 @@ public abstract class Token {
 
     protected Token(TokenType tokenType, int lineIndex){
         this.tokenType = tokenType;
+        this.lineIndexOfSourceProgram = lineIndex;
     }
 
     public TokenType getTokenType(){

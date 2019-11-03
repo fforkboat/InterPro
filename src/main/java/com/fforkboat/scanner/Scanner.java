@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import com.fforkboat.common.CompileError;
-import com.fforkboat.common.ConstValueTable;
+import com.fforkboat.program.ConstValueTable;
 import com.fforkboat.scanner.token.Token;
 import com.fforkboat.scanner.token.TokenFactory;
 import com.fforkboat.scanner.token.TokenType;
@@ -12,47 +12,53 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public class Scanner {
-    // 单例
-    private static Scanner scanner = new Scanner();
-    private Scanner(){}
-    public static Scanner getScanner(){
-        return scanner;
-    }
-
-    private List<Token> outputTokens = new ArrayList<>();
-    private List<CompileError> errors = new ArrayList<>();
-
-    private static String[] keywords = {"if", "else", "while", "for", "break", "continue", "int", "double", "bool", "string", "true", "false", "function", "return"};
+    private static String[] keywords = {"if", "else", "while", "for", "break", "continue", "int", "double", "bool", "string", "void", "true", "false", "function", "return"};
 
     public static void main(String[] args) throws IOException {
-
-        ApplicationContext context = new FileSystemXmlApplicationContext("src/main/resources/META-INF/scannerContext.xml");
-
-        State startState = (State)context.getBean("E");
-        Scanner.getScanner().scan(startState, new File("src/test/input/b.txt"));
+        Scanner.scan(new File("src/test/input/b.txt"));
     }
 
-    public List<Token> scan(State startState, File source) throws IOException {
+    private static List<Token> scan(State startState, File source) throws IOException {
         if (startState == null)
             throw new IllegalArgumentException("Start state should not be null.");
 
-        this.outputTokens.clear();
-        this.errors.clear();
+        List<Token> outputTokens = new ArrayList<>();
+        List<CompileError> errors = new ArrayList<>();
 
         try(BufferedReader reader = new BufferedReader(new FileReader(source))){
             int rowCount = 0;
             String line;
+            boolean isInBlockComment = false;
             while ((line = reader.readLine()) != null){
                 rowCount++;
                 line = line.trim();
-                if (line.length() >= 2 && line.substring(0, 2).equals("//"))
-                    continue;
-
                 int i = 0;
                 while (i < line.length()){
                     char c = line.charAt(i);
                     while (c == ' ')
                         c = line.charAt(++i);
+
+                    if (isInBlockComment){
+                        if (c == '*' && i < line.length() -1 && line.charAt(i+1) == '/'){
+                            isInBlockComment = false;
+                            i = i + 2;
+                            continue;
+                        }
+                        i++;
+                        continue;
+                    }
+
+                    if (c == '/' && i < line.length() -1 && line.charAt(i+1) == '/'){
+                        i = line.length();
+                        continue;
+                    }
+
+                    if (c == '/' && i < line.length() -1 && line.charAt(i+1) == '*'){
+                        i = i + 2;
+                        isInBlockComment = true;
+                        continue;
+                    }
+
 
                     State state = startState;
                     StringBuilder builder = new StringBuilder();
@@ -137,5 +143,12 @@ public class Scanner {
         }
 
         return new ArrayList<>(outputTokens);
+    }
+
+    public static List<Token> scan(File source) throws IOException {
+        ApplicationContext context = new FileSystemXmlApplicationContext("src/main/resources/META-INF/scannerContext.xml");
+
+        State startState = (State)context.getBean("E");
+        return scan(startState, source);
     }
 }
