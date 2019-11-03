@@ -19,6 +19,10 @@ import java.util.*;
 
 import static j2html.TagCreator.*;
 
+/**
+ * 语法分析器在进行语法分析过程中的上下文，保存了各种有用的数据
+ * 该类为单例类
+ * */
 class ParserContext {
     private ParserContext(){
         setNotFullyConfiguredBean();
@@ -28,16 +32,27 @@ class ParserContext {
         return context;
     }
 
+    // 保存一个标识符、函数参数、函数返回值的数据类型
     private DataType dataType;
+
     private SyntaxTreeNormalContainer rootContainer;
     private SyntaxTreeContainer currentSyntaxTreeContainer;
-    private SyntaxTreeBranchNode syntaxTreeRoot;
+    private SyntaxTreeBranchNode currentSyntaxTreeRoot;
     private Function.FunctionBuilder currentFunctionBuilder;
+
+    // 记录最后读取到的{符号是否是数组声明（{1, 2, 3}）的一部分，用于和块定义(if, while, function等语法块)的{符号区别开
     private boolean rightBraceForArray = false;
+
     private boolean shouldContinue = false;
     private boolean voidReturn = false;
+
+    // 符号栈
     private Stack<Symbol> symbolStack = new Stack<>();
+
+    // 树节点栈
     private Stack<SyntaxTreeNode> nodeStack = new Stack<>();
+
+    // 语法树容器与其相应的HTML的映射
     private Map<SyntaxTreeContainer, Pair<ContainerTag, Integer>> HTMLContainers = new HashMap<>();
 
     private ApplicationContext springContext = new FileSystemXmlApplicationContext("src/main/resources/META-INF/parserContext.xml");;
@@ -70,12 +85,12 @@ class ParserContext {
         this.currentSyntaxTreeContainer = currentSyntaxTreeContainer;
     }
 
-    SyntaxTreeBranchNode getSyntaxTreeRoot() {
-        return syntaxTreeRoot;
+    SyntaxTreeBranchNode getCurrentSyntaxTreeRoot() {
+        return currentSyntaxTreeRoot;
     }
 
-    void setSyntaxTreeRoot(SyntaxTreeBranchNode syntaxTreeRoot) {
-        this.syntaxTreeRoot = syntaxTreeRoot;
+    void setCurrentSyntaxTreeRoot(SyntaxTreeBranchNode currentSyntaxTreeRoot) {
+        this.currentSyntaxTreeRoot = currentSyntaxTreeRoot;
     }
 
     boolean isRightBraceForArray() {
@@ -134,13 +149,14 @@ class ParserContext {
         symbolStack.clear();
         nodeStack.clear();
 
-        syntaxTreeRoot = new SyntaxTreeBranchNode("S", null);
+        currentSyntaxTreeRoot = new SyntaxTreeBranchNode("S", null);
         symbolStack.push((NonterminalSymbol) springContext.getBean("S"));
-        nodeStack.push(syntaxTreeRoot);
+        nodeStack.push(currentSyntaxTreeRoot);
     }
 
+    // 当读取到;时，将当前的语法树加入到当前的语法树容器中
     void addSyntaxTreeToContainer(){
-        SyntaxTreeBranchNode root = ParserContext.getInstance().getSyntaxTreeRoot();
+        SyntaxTreeBranchNode root = ParserContext.getInstance().getCurrentSyntaxTreeRoot();
         SyntaxTreeBranchNode.reverseChildrenSequence(root);
 
         SyntaxTreeAsTreeForTreeLayout layout = new SyntaxTreeAsTreeForTreeLayout(root);
@@ -152,10 +168,11 @@ class ParserContext {
         ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
         container.with(rawHtml(generator.getSVG()));
 
-        ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(ParserContext.getInstance().getSyntaxTreeRoot());
+        ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(ParserContext.getInstance().getCurrentSyntaxTreeRoot());
         ParserContext.getInstance().reset();
     }
 
+    // 因为循环引用的原因，在Spring中没法完全初始化一些bean，于是拿到这里来进行后续工作
     @SuppressWarnings("unchecked")
     private void setNotFullyConfiguredBean(){
         NonterminalSymbol C32 = (NonterminalSymbol) springContext.getBean("C32");

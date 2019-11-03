@@ -17,7 +17,12 @@ import java.util.Map;
 
 import static j2html.TagCreator.a;
 
-public class ProductionHandlerSupplier {
+/**
+ * 提供所有的production handler
+ * */
+public final class ProductionHandlerSupplier {
+    private ProductionHandlerSupplier(){}
+
     private static Map<Pair<String, String>, ProductionHandler> handlerMap = new HashMap<>();
 
     public static ProductionHandler getHandler(Pair<String, String> pair){
@@ -72,7 +77,7 @@ public class ProductionHandlerSupplier {
             ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
             container.with(a("if").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
 
-            SyntaxTreeIfContainer ifContainer = new SyntaxTreeIfContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), ParserContext.getInstance().getSyntaxTreeRoot());
+            SyntaxTreeIfContainer ifContainer = new SyntaxTreeIfContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), ParserContext.getInstance().getCurrentSyntaxTreeRoot());
             ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(ifContainer);
             ParserContext.getInstance().setCurrentSyntaxTreeContainer(ifContainer);
             ParserContext.getInstance().reset();
@@ -91,7 +96,6 @@ public class ProductionHandlerSupplier {
             container.with(a("else").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
 
             SyntaxTreeNormalContainer elseContainer = new SyntaxTreeNormalContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), false);
-            ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(elseContainer);
             ((SyntaxTreeIfContainer)lastComponent).setElseConditionContainer(elseContainer);
             ParserContext.getInstance().setCurrentSyntaxTreeContainer(elseContainer);
             ParserContext.getInstance().reset();
@@ -102,7 +106,7 @@ public class ProductionHandlerSupplier {
             ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
             container.with(a("while").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
 
-            SyntaxTreeWhileContainer whileContainer = new SyntaxTreeWhileContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), ParserContext.getInstance().getSyntaxTreeRoot());
+            SyntaxTreeWhileContainer whileContainer = new SyntaxTreeWhileContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), ParserContext.getInstance().getCurrentSyntaxTreeRoot());
             ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(whileContainer);
             ParserContext.getInstance().setCurrentSyntaxTreeContainer(whileContainer);
             ParserContext.getInstance().reset();

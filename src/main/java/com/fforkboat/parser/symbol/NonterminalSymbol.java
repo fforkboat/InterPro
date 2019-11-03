@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+
+/**
+ * 非终结符
+ * 本来打算将此类也设计成像词法分析器中的State一样的不可变类。但是因为产生式的间接递归太难处理了，最后还是把此类设计为了可变类，
+ * 先创建未完全配置好的对象，再进行补充配置（可参见ParserContext中的setNotFullyConfiguredBean方法)
+ * */
 public class NonterminalSymbol implements Symbol {
     private Map<TerminalSymbolIndicator, Pair<List<Symbol>, ProductionHandler>> productions;
     private String symbolName;
@@ -26,7 +32,7 @@ public class NonterminalSymbol implements Symbol {
         private NonterminalSymbolBuilder(){}
         static NonterminalSymbolBuilder getBuilder(){return builder;}
 
-        // 设计失误
+        // 设计失误，忘记考虑间接递归的情况了
         NonterminalSymbol createNonterminalSymbolWithRecursion(String symbolName, Map<TerminalSymbolIndicator, Pair<List<Symbol>, ProductionHandler>> map, Map<TerminalSymbolIndicator, Triplet<List<Symbol>, ProductionHandler, Integer>> recursionMap){
             NonterminalSymbol symbol = new NonterminalSymbol(null, null);
 

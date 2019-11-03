@@ -1,7 +1,9 @@
 package com.fforkboat.parser.symbol;
 
-import com.fforkboat.parser.tree.SyntaxTreeLeafNode;
 
+/**
+ * 终结符
+ * */
 public class TerminalSymbol implements Symbol {
     private TerminalSymbolIndicator indicator;
 

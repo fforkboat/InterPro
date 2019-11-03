@@ -1,9 +1,11 @@
 package com.fforkboat.parser.tree;
 
-import com.fforkboat.parser.symbol.TerminalSymbol;
 import com.fforkboat.scanner.token.Token;
-import org.graphstream.graph.implementations.SingleGraph;
 
+
+/**
+ * 语法树的叶子节点
+ * */
 public class SyntaxTreeLeafNode extends SyntaxTreeNode {
     private Token token;
 

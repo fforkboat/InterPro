@@ -7,10 +7,16 @@ import java.util.Map;
 
 import com.fforkboat.common.*;
 
+
+/**
+ * 语法树容器的基类
+ * */
 public abstract class SyntaxTreeContainer implements SyntaxTreeContainerComponent {
     private List<SyntaxTreeContainerComponent> components = new ArrayList<>();
     private SyntaxTreeContainer parent;
     private boolean isRootContainer;
+
+    // 一个语法树容器和其子容器中所有可访问的标识符的集合
     private Map<String, Identifier> identifiers = new HashMap<>();
 
     SyntaxTreeContainer(SyntaxTreeContainer parent, boolean isRootContainer){
