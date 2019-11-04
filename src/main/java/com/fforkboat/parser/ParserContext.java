@@ -1,5 +1,6 @@
 package com.fforkboat.parser;
 
+import com.fforkboat.common.CompileError;
 import com.fforkboat.common.DataType;
 import com.fforkboat.parser.container.SyntaxTreeContainer;
 import com.fforkboat.parser.container.SyntaxTreeNormalContainer;
@@ -54,6 +55,9 @@ class ParserContext {
 
     // 语法树容器与其相应的HTML的映射
     private Map<SyntaxTreeContainer, Pair<ContainerTag, Integer>> HTMLContainers = new HashMap<>();
+
+    // 语法分析过程中发现的错误
+    private List<CompileError> errors = new ArrayList<>();
 
     private ApplicationContext springContext = new FileSystemXmlApplicationContext("src/main/resources/META-INF/parserContext.xml");;
 
@@ -143,6 +147,14 @@ class ParserContext {
 
     int getNextHtmlContainerIndex(){
         return HTMLContainers.size();
+    }
+
+    public List<CompileError> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<CompileError> errors) {
+        this.errors = errors;
     }
 
     void reset(){

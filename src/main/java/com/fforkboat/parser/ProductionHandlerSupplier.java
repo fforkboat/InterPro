@@ -1,5 +1,6 @@
 package com.fforkboat.parser;
 
+import com.fforkboat.common.CompileError;
 import com.fforkboat.common.DataType;
 import com.fforkboat.common.ReturnType;
 import com.fforkboat.parser.container.SyntaxTreeContainerComponent;
@@ -68,14 +69,13 @@ public final class ProductionHandlerSupplier {
                     ParserContext.getInstance().setDataType(DataType.BOOL_ARRAY);
                     break;
                 default:
-                    // TODO: explain exception reason
                     throw new IllegalStateException("");
             }
         });
 
         handlerMap.put(new Pair<>("D2", "{"), token -> {
             ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
-            container.with(a("if").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
+            container.with(a("if").withStyle("margin-right:20px").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
 
             SyntaxTreeIfContainer ifContainer = new SyntaxTreeIfContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), ParserContext.getInstance().getCurrentSyntaxTreeRoot());
             ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(ifContainer);
@@ -89,11 +89,11 @@ public final class ProductionHandlerSupplier {
             SyntaxTreeContainerComponent lastComponent = components.get(components.size()-1);
             if (!(lastComponent instanceof SyntaxTreeIfContainer)){
                 // TODO 出错处理：else之前没有if
-                return;
+                ParserContext.getInstance().getErrors().add(new CompileError("Parser: no 'if block' before else.", token.getLineIndexOfSourceProgram()));
             }
 
             ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
-            container.with(a("else").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
+            container.with(a("else").withStyle("margin-right:20px").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
 
             SyntaxTreeNormalContainer elseContainer = new SyntaxTreeNormalContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), false);
             ((SyntaxTreeIfContainer)lastComponent).setElseConditionContainer(elseContainer);
@@ -104,7 +104,7 @@ public final class ProductionHandlerSupplier {
 
         handlerMap.put(new Pair<>("E2", "{"), token -> {
             ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
-            container.with(a("while").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
+            container.with(a("while").withStyle("margin-right:20px").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
 
             SyntaxTreeWhileContainer whileContainer = new SyntaxTreeWhileContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), ParserContext.getInstance().getCurrentSyntaxTreeRoot());
             ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(whileContainer);
@@ -116,6 +116,7 @@ public final class ProductionHandlerSupplier {
         handlerMap.put(new Pair<>("S", "FUNCTION"), token -> {
             if (!ParserContext.getInstance().getCurrentSyntaxTreeContainer().isRootContainer()){
                 // TODO 报错处理
+                ParserContext.getInstance().getErrors().add(new CompileError("Parser: function declaration in an illegal place", token.getLineIndexOfSourceProgram()));
             }
         });
 
@@ -147,7 +148,7 @@ public final class ProductionHandlerSupplier {
             FunctionTable.getInstance().addFunction(function);
 
             ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
-            container.with(a("function").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
+            container.with(a("function").withStyle("margin-right:20px").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
 
             ParserContext.getInstance().setCurrentSyntaxTreeContainer(function.getSyntaxTreeContainer());
             ParserContext.getInstance().reset();

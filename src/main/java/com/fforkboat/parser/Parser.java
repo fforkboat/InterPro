@@ -18,25 +18,32 @@ import java.io.IOException;
 import java.util.*;
 
 public class Parser {
-    public static void main(String[] args) throws IOException {
-        List<CompileError> errors = new ArrayList<>();
-        List<Token> tokens = Scanner.scan(new File("src/test/input/b.txt"));
+    /**
+     * @param tokens the token sequence
+     * @return the root syntax tree container. The result is null if there are errors in the source code file.
+     * */
+    public static SyntaxTreeNormalContainer parse(List<Token> tokens) throws IOException {
         ParserContext context = ParserContext.getInstance();
 
+        // 创建根语法树容器(全局语法树容器),初始化Parser的上下文，准备开始语法分析
         SyntaxTreeNormalContainer rootContainer = new SyntaxTreeNormalContainer(null, true);
         context.setRootContainer(rootContainer);
         context.setCurrentSyntaxTreeContainer(rootContainer);
         context.reset();
 
+        // 从头开始读取token
         int i = 0;
         while (i < tokens.size()){
             Token token = tokens.get(i);
 
+            // 当读到的token是}时，并且该}不是一个数组定义的}，那这个}就代表了一个语法块的结束
+            // 此时需要把“当前语法树容器”的父容器设置为新的“当前语法树容器”
+            // 因为这个符号不能从产生式中推出，所以不能在ProductionHandler中处理，只能放在这里
             if (token.getTokenType() == TokenType.RIGHT_BRACE && !context.isRightBraceForArray()){
                 SyntaxTreeContainer parent = context.getCurrentSyntaxTreeContainer().getParent();
                 if (parent == null){
                     // TODO 出错处理
-                    errors.add(new CompileError("Parser: unmatched right brace", token.getLineIndexOfSourceProgram()));
+                    context.getErrors().add(new CompileError("Parser: unmatched right brace.", token.getLineIndexOfSourceProgram()));
                 }
                 else{
                     context.setCurrentSyntaxTreeContainer(parent);
@@ -46,27 +53,40 @@ public class Parser {
                 continue;
             }
 
+            // 当符号栈中已经没有符号但是token还没有读完时，说明出现语法错误
             if (context.getSymbolStack().size() == 0){
                 // TODO 出错处理
-                errors.add(new CompileError("Parser: Something wrong", token.getLineIndexOfSourceProgram()));
-                break;
+                context.getErrors().add(new CompileError("Parser: Something wrong.", token.getLineIndexOfSourceProgram()));
+
+                i = continueFromNextLine(tokens, context, i, token);
+                continue;
             }
 
+            // 从符号栈中取出一个符号，判断它是终结符还是非终结符，并进行相应的处理
             Symbol symbol = context.getSymbolStack().pop();
+
+            // 非终结符的情况
             if (symbol instanceof NonterminalSymbol){
                 if (!((NonterminalSymbol)symbol).canReceiveToken(token)){
-                    errors.add(new CompileError("Parser: Something wrong", token.getLineIndexOfSourceProgram()));
-                    break;
+                    context.getErrors().add(new CompileError("Parser: Unexpected token.", token.getLineIndexOfSourceProgram()));
+
+                    i = continueFromNextLine(tokens, context, i, token);
+                    continue;
                 }
 
                 List<Symbol> right = ((NonterminalSymbol) symbol).getRightPart(token);
+                // 在获取右部的过程中(getRightPart)，会调用ProductionHandler对象的handle函数
+                // 如果进入了新的语法块，在handle函数中会改变当前语法树节点和语法树容器，需要开始进行新一轮的token分析
+                // 此时本轮分析不再需要进行，直接退出
                 if (context.isShouldContinue()){
                     context.setShouldContinue(false);
                     i++;
                     continue;
                 }
-          
+
                 SyntaxTreeBranchNode branchNode = (SyntaxTreeBranchNode) context.getNodeStack().pop();
+
+                // 将产生式右部入栈
                 for (int j = right.size() - 1; j >= 0; j--) {
                     Symbol sym = right.get(j);
                     context.getSymbolStack().push(sym);
@@ -83,9 +103,11 @@ public class Parser {
                     }
                 }
             }
+            // 终结符的情况
             else {
                 TerminalSymbolIndicator indicator = ((TerminalSymbol) symbol).getIndicator();
 
+                // 判断当前token是否能被该非终结符识别
                 boolean isMatch = false;
                 if (token.getTokenType() == indicator){
                     isMatch = true;
@@ -111,13 +133,20 @@ public class Parser {
                         context.setRightBraceForArray(false);
                     }
 
+                    // 当前token被识别时，指针移到下一个token
                     i++;
                 }
                 else{
-                    //TODO 出错处理
-                    errors.add(new CompileError("Parser: Something wrong", token.getLineIndexOfSourceProgram()));
+                    context.getErrors().add(new CompileError("Parser: Unexpected token.", token.getLineIndexOfSourceProgram()));
+
+                    continueFromNextLine(tokens, context, i, token);
                 }
             }
+        }
+
+        if (context.getErrors().size() != 0){
+            CompileError.printErrorList(context.getErrors());
+            return null;
         }
 
         for (Pair<ContainerTag, Integer> pair :
@@ -126,9 +155,26 @@ public class Parser {
                 writer.write(pair.getValue0().render());
             }
         }
-        
-        if (errors.size() > 0){
-            System.out.println(errors);
+
+        return rootContainer;
+    }
+
+    public static void main(String[] args) throws IOException {
+        List<Token> tokens = Scanner.scan(new File("src/test/input/b.txt"));
+
+        if (tokens != null){
+            parse(tokens);
         }
+
+    }
+
+    // 从下一行开始继续尝试识别
+    private static int continueFromNextLine(List<Token> tokens, ParserContext context, int i, Token token) {
+        int currentLine = token.getLineIndexOfSourceProgram();
+        token = tokens.get(++i);
+        while (token.getLineIndexOfSourceProgram() == currentLine)
+            token = tokens.get(++i);
+        context.reset();
+        return i;
     }
 }

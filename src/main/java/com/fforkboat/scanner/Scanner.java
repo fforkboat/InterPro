@@ -18,9 +18,14 @@ public class Scanner {
         Scanner.scan(new File("src/test/input/b.txt"));
     }
 
-    private static List<Token> scan(State startState, File source) throws IOException {
-        if (startState == null)
-            throw new IllegalArgumentException("Start state should not be null.");
+    /**
+     * @param source the source code file
+     * @return the token list generated from source code. The result is null if there are errors in the source code file.
+     * */
+    public static List<Token> scan(File source) throws IOException {
+        ApplicationContext context = new FileSystemXmlApplicationContext("src/main/resources/META-INF/scannerContext.xml");
+
+        State startState = (State)context.getBean("E");
 
         List<Token> outputTokens = new ArrayList<>();
         List<CompileError> errors = new ArrayList<>();
@@ -88,7 +93,6 @@ public class Scanner {
                                 else{
                                     if (word.charAt(builder.length() - 1) == '_'){
                                         errors.add(new CompileError("Illegal identifier name:" + word, rowCount));
-                                        // TODO 处理报错
                                     }
                                     token = TokenFactory.createIdentifierToken(rowCount, word);
                                 }
@@ -125,30 +129,20 @@ public class Scanner {
                         outputTokens.add(token);
                     }
                     else{
-                        // TODO: 处理报错
                         errors.add(new CompileError("Can not recognize symbol: " + word, rowCount));
                     }
 
                 }
             }
-            
+
         }
 
-        // TODO 错误处理
         if (errors.size() > 0){
-            System.out.println(errors);
-        }
-        else {
-            System.out.println(outputTokens);
+            CompileError.printErrorList(errors);
+            return null;
         }
 
-        return new ArrayList<>(outputTokens);
-    }
-
-    public static List<Token> scan(File source) throws IOException {
-        ApplicationContext context = new FileSystemXmlApplicationContext("src/main/resources/META-INF/scannerContext.xml");
-
-        State startState = (State)context.getBean("E");
-        return scan(startState, source);
+        System.out.println(outputTokens);
+        return outputTokens;
     }
 }
