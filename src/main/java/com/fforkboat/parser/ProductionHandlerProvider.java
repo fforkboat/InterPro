@@ -113,7 +113,38 @@ public final class ProductionHandlerProvider {
             ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(ifContainer);
             ParserContext.getInstance().setCurrentSyntaxTreeContainer(ifContainer);
             ParserContext.getInstance().reset();
-            ParserContext.getInstance().setShouldContinue(true);
+
+            ParserContext.getInstance().setContinueWithNextToken(true);
+        });
+
+        // 和G，{的区别在于不把ifContainer设为当前container
+        handlerMap.put(new Pair<>("D2", ";"), token -> {
+            ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
+            container.with(a("if").withStyle("margin-right:20px").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
+
+            SyntaxTreeBranchNode root = ParserContext.getInstance().getCurrentSyntaxTreeRoot();
+            SyntaxTreeBranchNode.reverseChildrenSequence(root);
+            SyntaxTreeIfContainer ifContainer = new SyntaxTreeIfContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), root);
+            ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(ifContainer);
+
+            ParserContext.getInstance().reset();
+            ParserContext.getInstance().setContinueWithNextToken(true);
+        });
+
+        // 和G，{的区别在于continueWithThisToken和setInImplicitBlock
+        handlerMap.put(new Pair<>("D2", "S"), token -> {
+            ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
+            container.with(a("if").withStyle("margin-right:20px").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
+
+            SyntaxTreeBranchNode root = ParserContext.getInstance().getCurrentSyntaxTreeRoot();
+            SyntaxTreeBranchNode.reverseChildrenSequence(root);
+            SyntaxTreeIfContainer ifContainer = new SyntaxTreeIfContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), root);
+            ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(ifContainer);
+            ParserContext.getInstance().setCurrentSyntaxTreeContainer(ifContainer);
+            ParserContext.getInstance().reset();
+
+            ParserContext.getInstance().setContinueWithThisToken(true);
+            ParserContext.getInstance().setInImplicitBlock(true);
         });
 
         handlerMap.put(new Pair<>("G", "{"), token -> {
@@ -123,7 +154,50 @@ public final class ProductionHandlerProvider {
             SyntaxTreeNormalContainer elseContainer = new SyntaxTreeNormalContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), false);
             ParserContext.getInstance().setCurrentSyntaxTreeContainer(elseContainer);
             ParserContext.getInstance().reset();
-            ParserContext.getInstance().setShouldContinue(true);
+            ParserContext.getInstance().setContinueWithNextToken(true);
+            ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
+            container.with(a("else").withStyle("margin-right:20px").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
+
+            if (!(lastComponent instanceof SyntaxTreeIfContainer)){
+                // TODO 出错处理：else之前没有if
+                ParserContext.getInstance().getErrors().add(Error.createCompileError("Parser: no 'if block' before else.", token.getLineIndexOfSourceProgram()));
+                ParserContext.getInstance().setErrorInProductionHandler(true);
+            }
+            else {
+                ((SyntaxTreeIfContainer)lastComponent).setElseConditionContainer(elseContainer);
+
+            }
+        });
+
+        // 和G，{的区别在于不把elseContainer设为当前container
+        handlerMap.put(new Pair<>("G", ";"), token -> {
+            List<SyntaxTreeContainerComponent> components = ParserContext.getInstance().getCurrentSyntaxTreeContainer().getComponents();
+            SyntaxTreeContainerComponent lastComponent = components.get(components.size()-1);
+
+            SyntaxTreeNormalContainer elseContainer = new SyntaxTreeNormalContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), false);
+            ParserContext.getInstance().reset();
+            ParserContext.getInstance().setContinueWithNextToken(true);
+            ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
+            container.with(a("else").withStyle("margin-right:20px").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
+
+            if (!(lastComponent instanceof SyntaxTreeIfContainer)){
+                ParserContext.getInstance().getErrors().add(Error.createCompileError("Parser: no 'if block' before else.", token.getLineIndexOfSourceProgram()));
+                ParserContext.getInstance().setErrorInProductionHandler(true);
+            }
+            else {
+                ((SyntaxTreeIfContainer)lastComponent).setElseConditionContainer(elseContainer);
+            }
+        });
+
+        handlerMap.put(new Pair<>("G", "S"), token -> {
+            List<SyntaxTreeContainerComponent> components = ParserContext.getInstance().getCurrentSyntaxTreeContainer().getComponents();
+            SyntaxTreeContainerComponent lastComponent = components.get(components.size()-1);
+
+            SyntaxTreeNormalContainer elseContainer = new SyntaxTreeNormalContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), false);
+            ParserContext.getInstance().setCurrentSyntaxTreeContainer(elseContainer);
+            ParserContext.getInstance().reset();
+            ParserContext.getInstance().setContinueWithThisToken(true);
+            ParserContext.getInstance().setInImplicitBlock(true);
             ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
             container.with(a("else").withStyle("margin-right:20px").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
 
@@ -148,12 +222,37 @@ public final class ProductionHandlerProvider {
             ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(whileContainer);
             ParserContext.getInstance().setCurrentSyntaxTreeContainer(whileContainer);
             ParserContext.getInstance().reset();
-            ParserContext.getInstance().setShouldContinue(true);
+            ParserContext.getInstance().setContinueWithNextToken(true);
+        });
+
+        handlerMap.put(new Pair<>("E2", ";"), token -> {
+            ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
+            container.with(a("while").withStyle("margin-right:20px").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
+
+            SyntaxTreeBranchNode root = ParserContext.getInstance().getCurrentSyntaxTreeRoot();
+            SyntaxTreeBranchNode.reverseChildrenSequence(root);
+            SyntaxTreeWhileContainer whileContainer = new SyntaxTreeWhileContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), root);
+            ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(whileContainer);
+            ParserContext.getInstance().reset();
+            ParserContext.getInstance().setContinueWithNextToken(true);
+        });
+
+        handlerMap.put(new Pair<>("E2", "S"), token -> {
+            ContainerTag container = ParserContext.getInstance().getHtmlContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer());
+            container.with(a("while").withStyle("margin-right:20px").withHref(ParserContext.getInstance().getNextHtmlContainerIndex()+".html"));
+
+            SyntaxTreeBranchNode root = ParserContext.getInstance().getCurrentSyntaxTreeRoot();
+            SyntaxTreeBranchNode.reverseChildrenSequence(root);
+            SyntaxTreeWhileContainer whileContainer = new SyntaxTreeWhileContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), root);
+            ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(whileContainer);
+            ParserContext.getInstance().setCurrentSyntaxTreeContainer(whileContainer);
+            ParserContext.getInstance().reset();
+            ParserContext.getInstance().setContinueWithThisToken(true);
+            ParserContext.getInstance().setInImplicitBlock(true);
         });
 
         handlerMap.put(new Pair<>("S", "FUNCTION"), token -> {
             if (!ParserContext.getInstance().getCurrentSyntaxTreeContainer().isRootContainer()){
-                // TODO 报错处理
                 ParserContext.getInstance().getErrors().add(Error.createCompileError("Parser: function declaration in an illegal place", token.getLineIndexOfSourceProgram()));
                 ParserContext.getInstance().setErrorInProductionHandler(true);
             }
@@ -231,7 +330,7 @@ public final class ProductionHandlerProvider {
             ParserContext.getInstance().setInFunction(true);
             ParserContext.getInstance().setCurrentSyntaxTreeContainer(function.getSyntaxTreeContainer());
             ParserContext.getInstance().reset();
-            ParserContext.getInstance().setShouldContinue(true);
+            ParserContext.getInstance().setContinueWithNextToken(true);
         });
 
         handlerMap.put(new Pair<>("W", "{"), token -> {

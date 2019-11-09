@@ -2843,7 +2843,98 @@
                         </constructor-arg>
                     </bean>
                 </entry>
-                <!--还有一部分配置在ParserContext中-->
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType$ClusterFeature" factory-method="valueOf">
+                            <constructor-arg value="TYPE_DECLARATION"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="D2"/>
+                                        <constructor-arg index="1" value="S"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="IDENTIFIER"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="D2"/>
+                                        <constructor-arg index="1" value="S"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="IF"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="D2"/>
+                                        <constructor-arg index="1" value="S"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="WHILE"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="D2"/>
+                                        <constructor-arg index="1" value="S"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
             </map>
         </constructor-arg>
     </bean>
@@ -2908,7 +2999,7 @@
         </constructor-arg>
     </bean>
     <bean name="E2" factory-bean="symbolBuilder" factory-method="createNonterminalSymbolWithoutRecursion">
-        <constructor-arg index="0" value="D2"/>
+        <constructor-arg index="0" value="E2"/>
         <constructor-arg index="1">
             <map>
                 <entry>
@@ -2928,6 +3019,122 @@
                                     <bean class="org.javatuples.Pair">
                                         <constructor-arg index="0" value="E2"/>
                                         <constructor-arg index="1" value="{"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="SEMICOLON"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                                <ref bean="SEMICOLON" />
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="E2"/>
+                                        <constructor-arg index="1" value=";"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType$ClusterFeature" factory-method="valueOf">
+                            <constructor-arg value="TYPE_DECLARATION"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="E2"/>
+                                        <constructor-arg index="1" value="S"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="IDENTIFIER"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="E2"/>
+                                        <constructor-arg index="1" value="S"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="IF"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="E2"/>
+                                        <constructor-arg index="1" value="S"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="WHILE"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="E2"/>
+                                        <constructor-arg index="1" value="S"/>
                                     </bean>
                                 </constructor-arg>
                             </bean>
@@ -2959,6 +3166,122 @@
                                     <bean class="org.javatuples.Pair">
                                         <constructor-arg index="0" value="G"/>
                                         <constructor-arg index="1" value="{"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="SEMICOLON"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                                <ref bean="SEMICOLON" />
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="G"/>
+                                        <constructor-arg index="1" value=";"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType$ClusterFeature" factory-method="valueOf">
+                            <constructor-arg value="TYPE_DECLARATION"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="G"/>
+                                        <constructor-arg index="1" value="S"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="IDENTIFIER"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="G"/>
+                                        <constructor-arg index="1" value="S"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="IF"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="G"/>
+                                        <constructor-arg index="1" value="S"/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="WHILE"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="G"/>
+                                        <constructor-arg index="1" value="S"/>
                                     </bean>
                                 </constructor-arg>
                             </bean>

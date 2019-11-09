@@ -82,7 +82,7 @@ public class Interpreter {
                     if (!result){
                         if (ifContainer.getElseConditionContainer() != null){
                             InterpreterContext.setCurrentContainer(ifContainer.getElseConditionContainer());
-                            interpret(nextContainer);
+                            interpret(ifContainer.getElseConditionContainer());
                             InterpreterContext.setCurrentContainer(currentContainer);
                         }
                     }

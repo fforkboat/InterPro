@@ -50,7 +50,13 @@ public class Parser {
                     continue;
                 }
                 else{
-                    context.setCurrentSyntaxTreeContainer(parent);
+                    if (context.isInImplicitBlock()) {
+                        context.setCurrentSyntaxTreeContainer(parent.getParent());
+                        context.setInImplicitBlock(false);
+                    }
+                    else
+                        context.setCurrentSyntaxTreeContainer(parent);
+
                     i++;
                     continue;
                 }
@@ -81,9 +87,13 @@ public class Parser {
                 // 在获取右部的过程中(getRightPart)，会调用ProductionHandler对象的handle函数
                 // 如果进入了新的语法块，在handle函数中会改变当前语法树节点和语法树容器，需要开始进行新一轮的token分析
                 // 此时本轮分析不再需要进行，直接退出
-                if (context.isShouldContinue()){
-                    context.setShouldContinue(false);
+                if (context.isContinueWithNextToken()){
+                    context.setContinueWithNextToken(false);
                     i++;
+                    continue;
+                }
+                if (context.isContinueWithThisToken()){
+                    context.setContinueWithThisToken(false);
                     continue;
                 }
                 // 如果在handler函数中检测到错误，从下一行再开始

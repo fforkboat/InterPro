@@ -48,7 +48,9 @@ public class ParserContext {
     // 记录最后读取到的{符号是否是数组声明（{1, 2, 3}）的一部分，用于和块定义(if, while, function等语法块)的{符号区别开
     private boolean rightBraceForArray = false;
 
-    private boolean shouldContinue = false;
+    private boolean continueWithNextToken = false;
+    private boolean continueWithThisToken = false;
+    private boolean inImplicitBlock = false;
     private boolean errorInProductionHandler = false;
     private boolean voidReturn = false;
     private boolean inFunction = false;
@@ -127,12 +129,28 @@ public class ParserContext {
         return nodeStack;
     }
 
-    boolean isShouldContinue() {
-        return shouldContinue;
+    boolean isContinueWithNextToken() {
+        return continueWithNextToken;
     }
 
-    void setShouldContinue(boolean shouldContinue) {
-        this.shouldContinue = shouldContinue;
+    void setContinueWithNextToken(boolean continueWithNextToken) {
+        this.continueWithNextToken = continueWithNextToken;
+    }
+
+    boolean isContinueWithThisToken() {
+        return continueWithThisToken;
+    }
+
+    void setContinueWithThisToken(boolean continueWithThisToken) {
+        this.continueWithThisToken = continueWithThisToken;
+    }
+
+    boolean isInImplicitBlock() {
+        return inImplicitBlock;
+    }
+
+    void setInImplicitBlock(boolean inImplicitBlock) {
+        this.inImplicitBlock = inImplicitBlock;
     }
 
     boolean isErrorInProductionHandler() {
@@ -212,6 +230,10 @@ public class ParserContext {
 
         ParserContext.getInstance().getCurrentSyntaxTreeContainer().addComponent(ParserContext.getInstance().getCurrentSyntaxTreeRoot());
         ParserContext.getInstance().reset();
+        if (inImplicitBlock){
+            currentSyntaxTreeContainer = currentSyntaxTreeContainer.getParent();
+            inImplicitBlock = false;
+        }
     }
 
     // 因为循环引用的原因，在Spring中没法完全初始化一些bean，于是拿到这里来进行后续工作
@@ -371,8 +393,5 @@ public class ParserContext {
                 add(M2);
             }
         }, null));
-
     }
-
-
 }
