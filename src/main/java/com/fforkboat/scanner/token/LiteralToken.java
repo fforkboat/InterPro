@@ -1,8 +1,9 @@
 package com.fforkboat.scanner.token;
 
 /**
+ * 字面量token
  * 这类token带有指向符号表的指针
- * 这类token的TokenType可以是identifier, number, string literal
+ * 这类token的TokenType可以是number, string literal, bool literal
  * */
 public class LiteralToken extends Token {
     private int pointer;

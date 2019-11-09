@@ -34,6 +34,22 @@ public class SyntaxTreeBranchNode extends SyntaxTreeNode {
         return name;
     }
 
+    public int getLineIndexOfSourceProgramOfFirstToken(){
+        for (SyntaxTreeNode child :
+                children) {
+            if (child instanceof SyntaxTreeLeafNode){
+                return ((SyntaxTreeLeafNode) child).getToken().getLineIndexOfSourceProgram();
+            }
+            else {
+                int lineIndex = ((SyntaxTreeBranchNode)child).getLineIndexOfSourceProgramOfFirstToken();
+                if (lineIndex != -1)
+                    return lineIndex;
+            }
+        }
+
+        return -1;
+    }
+
 
     // 添加孩子节点时是逆序进行的(因为是在符号入栈过程中添加的孩子，而符号入栈需要逆序进行)，所以在最后得到的语法树中，
     // 分支节点的孩子节点的顺序与产生式右部中符号的顺序是反的，为了看着方便，提供这个方法调整孩子节点的顺序

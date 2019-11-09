@@ -28,21 +28,13 @@ public abstract class SyntaxTreeContainer implements SyntaxTreeContainerComponen
         components.add(component);
     }
 
-    public void addIdentifier(String name, DataType dataType){
+    public boolean addIdentifier(String name, DataType dataType){
         if (identifiers.containsKey(name)){
-            // TODO:出错处理
-            return;
-        }
-        SyntaxTreeContainer tmp = parent;
-        while (tmp != null){
-            if (tmp.identifiers.containsKey(name)){
-                // TODO:出错处理
-                return;
-            }
-            tmp = tmp.parent;
+            return false;
         }
 
-        identifiers.put(name, new Identifier(dataType));
+        identifiers.put(name, new Identifier(dataType, name));
+        return true;
     }
 
     public Identifier getIdentifier(String name){
@@ -58,7 +50,6 @@ public abstract class SyntaxTreeContainer implements SyntaxTreeContainerComponen
             tmp = tmp.parent;
         }
 
-        // TODO 出错处理
         return null;
     }
 

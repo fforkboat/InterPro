@@ -5,15 +5,14 @@ import com.fforkboat.parser.symbol.TerminalSymbolIndicator;
 public enum TokenType implements TerminalSymbolIndicator {
     IDENTIFIER,
     ASSIGN,
-    ARRAY_OPERATION,
 
     INT_LITERAL(new ClusterFeature[]{ClusterFeature.NUMBER}),
-    DOUBLE_LITERAL(new ClusterFeature[]{ClusterFeature.NUMBER}),
+    REAL_LITERAL(new ClusterFeature[]{ClusterFeature.NUMBER}),
     STRING_LITERAL,
     BOOL_LITERAL,
 
     INT(new ClusterFeature[]{ClusterFeature.TYPE_DECLARATION}),
-    DOUBLE(new ClusterFeature[]{ClusterFeature.TYPE_DECLARATION}),
+    REAL(new ClusterFeature[]{ClusterFeature.TYPE_DECLARATION}),
     STRING(new ClusterFeature[]{ClusterFeature.TYPE_DECLARATION}),
     BOOL(new ClusterFeature[]{ClusterFeature.TYPE_DECLARATION}),
     VOID,
@@ -76,6 +75,7 @@ public enum TokenType implements TerminalSymbolIndicator {
             case "==":
                 return EQUAL;
             case "!=":
+            case "<>":
                 return UNEQUAL;
             default:
                 return null;

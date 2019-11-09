@@ -1,6 +1,6 @@
 package com.fforkboat.parser;
 
-import com.fforkboat.common.CompileError;
+import com.fforkboat.common.Error;
 import com.fforkboat.parser.container.SyntaxTreeContainer;
 import com.fforkboat.parser.container.SyntaxTreeNormalContainer;
 import com.fforkboat.parser.symbol.*;
@@ -33,8 +33,10 @@ public class Parser {
 
         // 从头开始读取token
         int i = 0;
+
+        Token token = null;
         while (i < tokens.size()){
-            Token token = tokens.get(i);
+            token = tokens.get(i);
 
             // 当读到的token是}时，并且该}不是一个数组定义的}，那这个}就代表了一个语法块的结束
             // 此时需要把“当前语法树容器”的父容器设置为新的“当前语法树容器”
@@ -43,20 +45,21 @@ public class Parser {
                 SyntaxTreeContainer parent = context.getCurrentSyntaxTreeContainer().getParent();
                 if (parent == null){
                     // TODO 出错处理
-                    context.getErrors().add(new CompileError("Parser: unmatched right brace.", token.getLineIndexOfSourceProgram()));
+                    context.getErrors().add(Error.createCompileError("Parser: unmatched right brace.", token.getLineIndexOfSourceProgram()));
+                    i = continueFromNextLine(tokens, context, i, token);
+                    continue;
                 }
                 else{
                     context.setCurrentSyntaxTreeContainer(parent);
+                    i++;
+                    continue;
                 }
-
-                i++;
-                continue;
             }
 
             // 当符号栈中已经没有符号但是token还没有读完时，说明出现语法错误
             if (context.getSymbolStack().size() == 0){
                 // TODO 出错处理
-                context.getErrors().add(new CompileError("Parser: Something wrong.", token.getLineIndexOfSourceProgram()));
+                context.getErrors().add(Error.createCompileError("Parser: Something wrong.", token.getLineIndexOfSourceProgram()));
 
                 i = continueFromNextLine(tokens, context, i, token);
                 continue;
@@ -68,7 +71,7 @@ public class Parser {
             // 非终结符的情况
             if (symbol instanceof NonterminalSymbol){
                 if (!((NonterminalSymbol)symbol).canReceiveToken(token)){
-                    context.getErrors().add(new CompileError("Parser: Unexpected token.", token.getLineIndexOfSourceProgram()));
+                    context.getErrors().add(Error.createCompileError("Parser: Unexpected token.", token.getLineIndexOfSourceProgram()));
 
                     i = continueFromNextLine(tokens, context, i, token);
                     continue;
@@ -81,6 +84,12 @@ public class Parser {
                 if (context.isShouldContinue()){
                     context.setShouldContinue(false);
                     i++;
+                    continue;
+                }
+                // 如果在handler函数中检测到错误，从下一行再开始
+                if (context.isErrorInProductionHandler()){
+                    context.setErrorInProductionHandler(false);
+                    i = continueFromNextLine(tokens, context, i, token);
                     continue;
                 }
 
@@ -137,15 +146,23 @@ public class Parser {
                     i++;
                 }
                 else{
-                    context.getErrors().add(new CompileError("Parser: Unexpected token.", token.getLineIndexOfSourceProgram()));
+                    context.getErrors().add(Error.createCompileError("Parser: Unexpected token.", token.getLineIndexOfSourceProgram()));
 
                     continueFromNextLine(tokens, context, i, token);
                 }
             }
         }
 
+        // 判断符号栈中是否还有多余的符号
+        if (token!= null && context.getSymbolStack().size() != 0){
+            Symbol symbol = context.getSymbolStack().pop();
+            if (symbol instanceof TerminalSymbol || !((NonterminalSymbol) symbol).getSymbolName().equals("S")){
+                context.getErrors().add(Error.createCompileError("Parser: unmatched symbol", token.getLineIndexOfSourceProgram()));
+            }
+        }
+
         if (context.getErrors().size() != 0){
-            CompileError.printErrorList(context.getErrors());
+            Error.printErrorList(context.getErrors());
             return null;
         }
 
@@ -161,6 +178,13 @@ public class Parser {
 
     public static void main(String[] args) throws IOException {
         List<Token> tokens = Scanner.scan(new File("src/test/input/b.txt"));
+//        List<Token> tokens = Scanner.scan(new File("src/test/input/a.txt"));
+//        List<Token> tokens = Scanner.scan(new File("src/test/input/a_error.txt"));
+//        List<Token> tokens = Scanner.scan(new File("src/test/input/b.txt"));
+//        List<Token> tokens = Scanner.scan(new File("src/test/input/b_error.txt"));
+//        List<Token> tokens = Scanner.scan(new File("src/test/input/c.txt"));
+//        List<Token> tokens = Scanner.scan(new File("src/test/input/c_error.txt"));
+//        List<Token> tokens = Scanner.scan(new File("src/test/input/given_test.txt"));
 
         if (tokens != null){
             parse(tokens);
@@ -170,10 +194,17 @@ public class Parser {
 
     // 从下一行开始继续尝试识别
     private static int continueFromNextLine(List<Token> tokens, ParserContext context, int i, Token token) {
+        if (i == tokens.size() - 1)
+            return tokens.size();
+
         int currentLine = token.getLineIndexOfSourceProgram();
         token = tokens.get(++i);
-        while (token.getLineIndexOfSourceProgram() == currentLine)
+        while (token.getLineIndexOfSourceProgram() == currentLine){
+            if (i == tokens.size() - 1)
+                return tokens.size();
             token = tokens.get(++i);
+        }
+
         context.reset();
         return i;
     }

@@ -1,2 +1,7 @@
+// 合法变量声明语句
+int num;
 int i = 1;
-i = i + 1;
+real r = 1.9;
+bool d = true;
+string s = "hello world \n";
+int int_list [] = {1, 2, 3};

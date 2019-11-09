@@ -2,24 +2,32 @@ package com.fforkboat.common;
 
 public class Identifier {
     private DataType dataType;
-    private String value;
+    private Object value;
+    private String name;
 
-    public Identifier(DataType type){
+    public Identifier(DataType type, String name){
         dataType = type;
+        this.name = name;
     }
 
     public DataType getDataType() {
         return dataType;
     }
 
-    public String getValue() {
-        if (value == null){
-            // TODO: 报错
-        }
+    public String getName() {
+        return name;
+    }
+
+    public Object getValue() {
         return value;
     }
-    public void setValue(String value) {
-        // TODO 检查
+
+    public boolean setValue(Object value) {
+        if(DataType.isDataTypeMatches(dataType, value.getClass()))
+            return false;
+
         this.value = value;
+        return true;
     }
+
 }

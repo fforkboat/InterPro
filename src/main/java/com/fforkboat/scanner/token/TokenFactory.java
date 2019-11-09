@@ -6,15 +6,6 @@ package com.fforkboat.scanner.token;
  * 所有的工厂方法都能保证每个创建的token是合理的，如不会出现PointerToken的TokenType是TokenType.ADD的情况
  * */
 public class TokenFactory {
-    // 为创建normal token和 literal token检查参数token type是否合法
-    private static void checkTokenType(Class tokenClass, TokenType type){
-        boolean isLiteralToken = type == TokenType.BOOL_LITERAL || type == TokenType.DOUBLE_LITERAL || type == TokenType.INT_LITERAL || type == TokenType.STRING_LITERAL;
-
-        if (type == TokenType.ARRAY_OPERATION || type == TokenType.IDENTIFIER || (tokenClass.equals(NormalToken.class) && isLiteralToken) || (tokenClass.equals(LiteralToken.class) && !isLiteralToken))
-            throw new IllegalArgumentException("Token type:" + type.name() + " should not be created by this method.");
-
-    }
-
     public static NormalToken createNormalToken(TokenType type, int lineIndex){
         checkTokenType(NormalToken.class, type);
 
@@ -31,7 +22,12 @@ public class TokenFactory {
         return new IdentifierToken(lineIndex, identifierName);
     }
 
-    public static ArrayOperationToken createArrayOperationToken(int lineIndex, int operationIndex) {
-        return new ArrayOperationToken(lineIndex, operationIndex);
+    // 为创建NormalToken和LiteralToken时检查参数token type是否合法
+    private static void checkTokenType(Class tokenClass, TokenType type){
+        boolean isLiteralToken = type == TokenType.BOOL_LITERAL || type == TokenType.REAL_LITERAL || type == TokenType.INT_LITERAL || type == TokenType.STRING_LITERAL;
+
+        if (type == TokenType.IDENTIFIER || (tokenClass.equals(NormalToken.class) && isLiteralToken) || (tokenClass.equals(LiteralToken.class) && !isLiteralToken))
+            throw new IllegalArgumentException("Token type:" + type.name() + " should not be created by this method.");
+
     }
 }

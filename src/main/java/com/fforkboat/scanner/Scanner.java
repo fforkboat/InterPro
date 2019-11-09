@@ -3,7 +3,7 @@ package com.fforkboat.scanner;
 import java.io.*;
 import java.util.*;
 
-import com.fforkboat.common.CompileError;
+import com.fforkboat.common.Error;
 import com.fforkboat.program.ConstValueTable;
 import com.fforkboat.scanner.token.Token;
 import com.fforkboat.scanner.token.TokenFactory;
@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public class Scanner {
-    private static String[] keywords = {"if", "else", "while", "for", "break", "continue", "int", "double", "bool", "string", "void", "true", "false", "function", "return"};
+    private static String[] keywords = {"if", "else", "while", "for", "break", "continue", "int", "real", "bool", "string", "void", "true", "false", "function", "return"};
 
     public static void main(String[] args) throws IOException {
         Scanner.scan(new File("src/test/input/b.txt"));
@@ -28,19 +28,24 @@ public class Scanner {
         State startState = (State)context.getBean("E");
 
         List<Token> outputTokens = new ArrayList<>();
-        List<CompileError> errors = new ArrayList<>();
+        List<Error> errors = new ArrayList<>();
 
         try(BufferedReader reader = new BufferedReader(new FileReader(source))){
             int rowCount = 0;
             String line;
+            // 是否在块注释内
             boolean isInBlockComment = false;
+            // 一行一行的读取源代码文件
             while ((line = reader.readLine()) != null){
                 rowCount++;
+                // 去掉这一行头尾的空格
                 line = line.trim();
                 int i = 0;
+                // 一个一个字符的读一行的内容
                 while (i < line.length()){
                     char c = line.charAt(i);
-                    while (c == ' ')
+                    // 忽略空格
+                    while (c == ' ' || c == '\t')
                         c = line.charAt(++i);
 
                     if (isInBlockComment){
@@ -54,8 +59,7 @@ public class Scanner {
                     }
 
                     if (c == '/' && i < line.length() -1 && line.charAt(i+1) == '/'){
-                        i = line.length();
-                        continue;
+                        break;
                     }
 
                     if (c == '/' && i < line.length() -1 && line.charAt(i+1) == '*'){
@@ -64,10 +68,9 @@ public class Scanner {
                         continue;
                     }
 
-
                     State state = startState;
                     StringBuilder builder = new StringBuilder();
-                    while (state.canReceive(c)){
+                    do {
                         builder.append(c);
                         state = state.getNextState(c);
 
@@ -78,8 +81,10 @@ public class Scanner {
 
                         c = line.charAt(++i);
                     }
+                    while (state != null && state.canReceive(c));
+
                     String word = builder.toString();
-                    if (state.isFinalState()){
+                    if (state != null && state.isFinalState()){
                         Token token;
                         switch (state.getCorrespondingTokeType()){
                             case IDENTIFIER:
@@ -92,26 +97,21 @@ public class Scanner {
                                 }
                                 else{
                                     if (word.charAt(builder.length() - 1) == '_'){
-                                        errors.add(new CompileError("Illegal identifier name:" + word, rowCount));
+                                        errors.add(Error.createCompileError("Illegal identifier name:" + word, rowCount));
                                     }
                                     token = TokenFactory.createIdentifierToken(rowCount, word);
                                 }
                                 break;
-                            case DOUBLE_LITERAL:
-                                token = TokenFactory.createLiteralToken(TokenType.DOUBLE_LITERAL, rowCount, ConstValueTable.getConstValueTable().getDoubleIndex(word));
+                            case REAL_LITERAL:
+                                token = TokenFactory.createLiteralToken(TokenType.REAL_LITERAL, rowCount, ConstValueTable.getConstValueTable().getRealIndex(word));
                                 break;
                             case INT_LITERAL:
                                 token = TokenFactory.createLiteralToken(TokenType.INT_LITERAL, rowCount, ConstValueTable.getConstValueTable().getIntegerIndex(word));
                                 break;
                             case STRING_LITERAL:
                                 // 识别得到的单元一定符合"literal"的格式，提取出literal
-                                String literal = builder.length() > 2 ? builder.substring(1, builder.length()) : "";
+                                String literal = builder.length() > 2 ? builder.substring(1, builder.length()-1) : "";
                                 token = TokenFactory.createLiteralToken(TokenType.STRING_LITERAL, rowCount, ConstValueTable.getConstValueTable().getStringIndex(literal));
-                                break;
-                            case ARRAY_OPERATION:
-                                // 识别得到的单元一定符合[index]的格式，提取出index
-                                int index = Integer.valueOf(builder.substring(1, builder.length()));
-                                token = TokenFactory.createArrayOperationToken(rowCount, index);
                                 break;
 
                             case GREATER:
@@ -129,7 +129,7 @@ public class Scanner {
                         outputTokens.add(token);
                     }
                     else{
-                        errors.add(new CompileError("Can not recognize symbol: " + word, rowCount));
+                        errors.add(Error.createCompileError("Can not recognize symbol: " + word, rowCount));
                     }
 
                 }
@@ -138,7 +138,7 @@ public class Scanner {
         }
 
         if (errors.size() > 0){
-            CompileError.printErrorList(errors);
+            Error.printErrorList(errors);
             return null;
         }
 

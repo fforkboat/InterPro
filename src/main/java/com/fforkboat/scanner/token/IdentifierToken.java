@@ -1,5 +1,9 @@
 package com.fforkboat.scanner.token;
 
+
+/**
+ * 标识符token
+ * */
 public class IdentifierToken extends Token {
     private String identifierName;
 

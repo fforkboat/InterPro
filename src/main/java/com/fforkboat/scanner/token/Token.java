@@ -1,10 +1,6 @@
 package com.fforkboat.scanner.token;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * 所有token类的抽象基类
  * 该类是不可变的

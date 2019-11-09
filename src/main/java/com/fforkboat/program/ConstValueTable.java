@@ -29,7 +29,7 @@ public class ConstValueTable {
         return integers.get(index);
     }
 
-    public int getDoubleIndex(String number){
+    public int getRealIndex(String number){
         Double num = Double.valueOf(number);
         if (doubles.contains(num))
             return doubles.indexOf(num);
@@ -38,7 +38,7 @@ public class ConstValueTable {
         return doubles.size() - 1;
     }
 
-    public Double getDouble(int index){
+    public Double getReal(int index){
         return doubles.get(index);
     }
 

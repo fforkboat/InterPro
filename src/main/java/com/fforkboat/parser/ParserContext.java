@@ -1,6 +1,7 @@
 package com.fforkboat.parser;
 
-import com.fforkboat.common.CompileError;
+import com.fforkboat.common.CustomFunction;
+import com.fforkboat.common.Error;
 import com.fforkboat.common.DataType;
 import com.fforkboat.parser.container.SyntaxTreeContainer;
 import com.fforkboat.parser.container.SyntaxTreeNormalContainer;
@@ -8,6 +9,7 @@ import com.fforkboat.parser.symbol.NonterminalSymbol;
 import com.fforkboat.parser.symbol.Symbol;
 import com.fforkboat.parser.symbol.TerminalSymbol;
 import com.fforkboat.parser.tree.*;
+import com.fforkboat.scanner.token.IdentifierToken;
 import com.fforkboat.scanner.token.TokenType;
 import j2html.tags.ContainerTag;
 import org.abego.treelayout.TreeLayout;
@@ -24,7 +26,7 @@ import static j2html.TagCreator.*;
  * 语法分析器在进行语法分析过程中的上下文，保存了各种有用的数据
  * 该类为单例类
  * */
-class ParserContext {
+public class ParserContext {
     private ParserContext(){
         setNotFullyConfiguredBean();
     }
@@ -39,13 +41,17 @@ class ParserContext {
     private SyntaxTreeNormalContainer rootContainer;
     private SyntaxTreeContainer currentSyntaxTreeContainer;
     private SyntaxTreeBranchNode currentSyntaxTreeRoot;
-    private Function.FunctionBuilder currentFunctionBuilder;
+    private CustomFunction.CustomFunctionBuilder currentFunctionBuilder;
+
+    private IdentifierToken lastIdentifierToken;
 
     // 记录最后读取到的{符号是否是数组声明（{1, 2, 3}）的一部分，用于和块定义(if, while, function等语法块)的{符号区别开
     private boolean rightBraceForArray = false;
 
     private boolean shouldContinue = false;
+    private boolean errorInProductionHandler = false;
     private boolean voidReturn = false;
+    private boolean inFunction = false;
 
     // 符号栈
     private Stack<Symbol> symbolStack = new Stack<>();
@@ -57,7 +63,7 @@ class ParserContext {
     private Map<SyntaxTreeContainer, Pair<ContainerTag, Integer>> HTMLContainers = new HashMap<>();
 
     // 语法分析过程中发现的错误
-    private List<CompileError> errors = new ArrayList<>();
+    private List<Error> errors = new ArrayList<>();
 
     private ApplicationContext springContext = new FileSystemXmlApplicationContext("src/main/resources/META-INF/parserContext.xml");;
 
@@ -97,6 +103,14 @@ class ParserContext {
         this.currentSyntaxTreeRoot = currentSyntaxTreeRoot;
     }
 
+    IdentifierToken getLastIdentifierToken() {
+        return lastIdentifierToken;
+    }
+
+    void setLastIdentifierToken(IdentifierToken lastIdentifierToken) {
+        this.lastIdentifierToken = lastIdentifierToken;
+    }
+
     boolean isRightBraceForArray() {
         return rightBraceForArray;
     }
@@ -121,11 +135,27 @@ class ParserContext {
         this.shouldContinue = shouldContinue;
     }
 
-    Function.FunctionBuilder getCurrentFunctionBuilder() {
+    boolean isErrorInProductionHandler() {
+        return errorInProductionHandler;
+    }
+
+    void setErrorInProductionHandler(boolean errorInProductionHandler) {
+        this.errorInProductionHandler = errorInProductionHandler;
+    }
+
+    public boolean isInFunction() {
+        return inFunction;
+    }
+
+    public void setInFunction(boolean inFunction) {
+        this.inFunction = inFunction;
+    }
+
+    CustomFunction.CustomFunctionBuilder getCurrentFunctionBuilder() {
         return currentFunctionBuilder;
     }
 
-    void setCurrentFunctionBuilder(Function.FunctionBuilder currentFunctionBuilder) {
+    void setCurrentFunctionBuilder(CustomFunction.CustomFunctionBuilder currentFunctionBuilder) {
         this.currentFunctionBuilder = currentFunctionBuilder;
     }
 
@@ -149,11 +179,11 @@ class ParserContext {
         return HTMLContainers.size();
     }
 
-    public List<CompileError> getErrors() {
+    public List<Error> getErrors() {
         return errors;
     }
 
-    public void setErrors(List<CompileError> errors) {
+    public void setErrors(List<Error> errors) {
         this.errors = errors;
     }
 
@@ -332,6 +362,16 @@ class ParserContext {
                 add(W21);
             }
         }, null));
+
+        NonterminalSymbol M2 = (NonterminalSymbol) springContext.getBean("M2");
+        M2.addProduction(TokenType.COMMA, new Pair(new ArrayList(){
+            {
+                add(COMMA);
+                add(W1);
+                add(M2);
+            }
+        }, null));
+
     }
 
 

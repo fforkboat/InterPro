@@ -1,5 +1,6 @@
 package com.fforkboat.parser.container;
 
+import com.fforkboat.parser.tree.SyntaxTreeBranchNode;
 import com.fforkboat.parser.tree.SyntaxTreeNode;
 
 
@@ -7,15 +8,15 @@ import com.fforkboat.parser.tree.SyntaxTreeNode;
  * 表示一个if块的语法树容器
  * */
 public class SyntaxTreeIfContainer extends SyntaxTreeContainer {
-    private SyntaxTreeNode predicate;
+    private SyntaxTreeBranchNode predicate;
     private SyntaxTreeNormalContainer elseConditionContainer;
 
-    public SyntaxTreeIfContainer(SyntaxTreeContainer parent, SyntaxTreeNode predicate) {
+    public SyntaxTreeIfContainer(SyntaxTreeContainer parent, SyntaxTreeBranchNode predicate) {
         super(parent, false);
         this.predicate = predicate;
     }
 
-    public SyntaxTreeNode getPredicate() {
+    public SyntaxTreeBranchNode getPredicate() {
         return predicate;
     }
 
