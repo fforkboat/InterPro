@@ -62,7 +62,6 @@ public final class ProductionHandlerProvider {
             if (!result){
                 ParserContext.getInstance().getErrors().add(Error.createCompileError("Parser: Identifier '" + identifierToken.getIdentifierName() + "' has been declared", token.getLineIndexOfSourceProgram()));
             }
-
         });
 
         handlerMap.put(new Pair<>("A2", "["), token -> {
@@ -149,7 +148,11 @@ public final class ProductionHandlerProvider {
 
         handlerMap.put(new Pair<>("G", "{"), token -> {
             List<SyntaxTreeContainerComponent> components = ParserContext.getInstance().getCurrentSyntaxTreeContainer().getComponents();
-            SyntaxTreeContainerComponent lastComponent = components.get(components.size()-1);
+            SyntaxTreeContainerComponent lastComponent;
+            if (components.size() == 0)
+                lastComponent = null;
+            else
+                lastComponent = components.get(components.size()-1);
 
             SyntaxTreeNormalContainer elseContainer = new SyntaxTreeNormalContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), false);
             ParserContext.getInstance().setCurrentSyntaxTreeContainer(elseContainer);
@@ -172,7 +175,11 @@ public final class ProductionHandlerProvider {
         // 和G，{的区别在于不把elseContainer设为当前container
         handlerMap.put(new Pair<>("G", ";"), token -> {
             List<SyntaxTreeContainerComponent> components = ParserContext.getInstance().getCurrentSyntaxTreeContainer().getComponents();
-            SyntaxTreeContainerComponent lastComponent = components.get(components.size()-1);
+            SyntaxTreeContainerComponent lastComponent;
+            if (components.size() == 0)
+                lastComponent = null;
+            else
+                lastComponent = components.get(components.size()-1);
 
             SyntaxTreeNormalContainer elseContainer = new SyntaxTreeNormalContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), false);
             ParserContext.getInstance().reset();
@@ -191,7 +198,11 @@ public final class ProductionHandlerProvider {
 
         handlerMap.put(new Pair<>("G", "S"), token -> {
             List<SyntaxTreeContainerComponent> components = ParserContext.getInstance().getCurrentSyntaxTreeContainer().getComponents();
-            SyntaxTreeContainerComponent lastComponent = components.get(components.size()-1);
+            SyntaxTreeContainerComponent lastComponent;
+            if (components.size() == 0)
+                lastComponent = null;
+            else
+                lastComponent = components.get(components.size()-1);
 
             SyntaxTreeNormalContainer elseContainer = new SyntaxTreeNormalContainer(ParserContext.getInstance().getCurrentSyntaxTreeContainer(), false);
             ParserContext.getInstance().setCurrentSyntaxTreeContainer(elseContainer);
@@ -262,7 +273,7 @@ public final class ProductionHandlerProvider {
             SyntaxTreeContainer container = ParserContext.getInstance().getCurrentSyntaxTreeContainer();
             boolean isInWhile = false;
             while (container != null){
-                if (container instanceof SyntaxTreeIfContainer){
+                if (container instanceof SyntaxTreeWhileContainer){
                     isInWhile = true;
                     break;
                 }
@@ -278,7 +289,7 @@ public final class ProductionHandlerProvider {
             SyntaxTreeContainer container = ParserContext.getInstance().getCurrentSyntaxTreeContainer();
             boolean isInWhile = false;
             while (container != null){
-                if (container instanceof SyntaxTreeIfContainer){
+                if (container instanceof SyntaxTreeWhileContainer){
                     isInWhile = true;
                     break;
                 }
@@ -286,6 +297,41 @@ public final class ProductionHandlerProvider {
             }
             if (!isInWhile){
                 ParserContext.getInstance().getErrors().add(Error.createCompileError("Parser: continue clause is not in a while block", token.getLineIndexOfSourceProgram()));
+                ParserContext.getInstance().setErrorInProductionHandler(true);
+            }
+        });
+
+        handlerMap.put(new Pair<>("S", "ID"), token -> {
+            ParserContext.getInstance().setRecentlyAccessedIdentifier(((IdentifierToken)token));
+        });
+
+        handlerMap.put(new Pair<>("UID", "ID"), token -> {
+            ParserContext.getInstance().setRecentlyAccessedIdentifier(((IdentifierToken)token));
+        });
+
+        handlerMap.put(new Pair<>("M", "="), token -> {
+            IdentifierToken identifierToken = ParserContext.getInstance().getRecentlyAccessedIdentifier();
+            SyntaxTreeContainer container = ParserContext.getInstance().getCurrentSyntaxTreeContainer();
+            if (container.getIdentifier(identifierToken.getIdentifierName()) == null){
+                ParserContext.getInstance().getErrors().add(Error.createCompileError("Parser: can not resolve symbol '" + identifierToken.getIdentifierName() + "'." , identifierToken.getLineIndexOfSourceProgram()));
+                ParserContext.getInstance().setErrorInProductionHandler(true);
+            }
+        });
+
+        handlerMap.put(new Pair<>("U1", "SEMICOLON"), token -> {
+            IdentifierToken identifierToken = ParserContext.getInstance().getRecentlyAccessedIdentifier();
+            SyntaxTreeContainer container = ParserContext.getInstance().getCurrentSyntaxTreeContainer();
+            if (container.getIdentifier(identifierToken.getIdentifierName()) == null){
+                ParserContext.getInstance().getErrors().add(Error.createCompileError("Parser: can not resolve symbol '" + identifierToken.getIdentifierName() + "'." , identifierToken.getLineIndexOfSourceProgram()));
+                ParserContext.getInstance().setErrorInProductionHandler(true);
+            }
+        });
+
+        handlerMap.put(new Pair<>("U1", "["), token -> {
+            IdentifierToken identifierToken = ParserContext.getInstance().getRecentlyAccessedIdentifier();
+            SyntaxTreeContainer container = ParserContext.getInstance().getCurrentSyntaxTreeContainer();
+            if (container.getIdentifier(identifierToken.getIdentifierName()) == null){
+                ParserContext.getInstance().getErrors().add(Error.createCompileError("Parser: can not resolve symbol '" + identifierToken.getIdentifierName() + "'." , identifierToken.getLineIndexOfSourceProgram()));
                 ParserContext.getInstance().setErrorInProductionHandler(true);
             }
         });

@@ -1,0 +1,44 @@
+// 合法if, else, while语句块
+
+int t = 1;
+int f = 0;
+if (t)
+    if (t){
+        print("in inner if \n");
+    }
+else
+    println("in outer else");
+
+println("----------");
+
+if (f)
+    if (f){
+        print("in inner if \n");
+    }
+else
+    println("in outer else");
+
+println("----------");
+
+int n = 0;
+while (n < 5){
+    println(n);
+    n = n + 1;
+    if (n == 5){
+        println("n == 5");
+    }
+    else
+        println("n != 5");
+}
+
+println("----------");
+
+int m = 0;
+while (m < 5){
+    m = m + 1;
+    if (m == 1)
+        continue;
+    if (m == 3)
+        break;
+    println(m);
+}

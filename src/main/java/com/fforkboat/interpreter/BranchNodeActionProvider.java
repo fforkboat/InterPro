@@ -51,8 +51,11 @@ public class BranchNodeActionProvider {
                     SyntaxTreeBranchNode B = ((SyntaxTreeBranchNode)children.get(1));
                     // 如果B的孩子数量为0，说明仅仅是声明变量，不需要赋值，而声明变量已经在语法分析中做过了，所以这里可以直接返回
                     if (B.getChildren().size() == 0){
+                        if (!isArray)
+                            return null;
+
                         // 当声明了数组，没有设置数组的初始大小，而此时又没有赋值语句，抛出错误
-                        if (isArray && arraySize == -1){
+                        if (arraySize == -1){
                             InterpreterContext.throwError(Error.createRuntimeError("No initial value for array.", branch.getLineIndexOfSourceProgramOfFirstToken()));
                         }
                         // 当声明了数组，且设置了数组大小时对数组进行初始化
@@ -213,12 +216,6 @@ public class BranchNodeActionProvider {
                     // 当语句为赋值时
                     if (firstTokenOfM.getTokenType() == TokenType.ASSIGN){
                         Identifier identifier = InterpreterContext.getCurrentContainer().getIdentifier(identifierName);
-                        if (identifier == null){
-                            InterpreterContext.throwError(
-                                    Error.createRuntimeError("Unresolved symbol '"+ identifierName + "'.", leaf.getToken().getLineIndexOfSourceProgram())
-                            );
-                            return null;
-                        }
 
                         SyntaxTreeBranchNode W1 = (SyntaxTreeBranchNode) M.getChildren().get(1);
                         Object value = actionMap.get("W1").act(W1.getChildren());
@@ -300,7 +297,7 @@ public class BranchNodeActionProvider {
 
                             SyntaxTreeContainer currentContainer = InterpreterContext.getCurrentContainer();
                             InterpreterContext.setCurrentContainer(functionSyntaxTreesContainer);
-                            Interpreter.interpretFunction(functionSyntaxTreesContainer);
+                            Interpreter.interpret(functionSyntaxTreesContainer);
                             InterpreterContext.setCurrentContainer(currentContainer);
                         }
 
@@ -681,12 +678,7 @@ public class BranchNodeActionProvider {
 
             if (U1.getChildren().size() == 0){
                 Identifier identifier = InterpreterContext.getCurrentContainer().getIdentifier(identifierName);
-                if (identifier == null){
-                    InterpreterContext.throwError(
-                            Error.createRuntimeError("Can not resolve symbol '" + identifierName + "'.", ID.getToken().getLineIndexOfSourceProgram())
-                    );
-                    return null;
-                }
+
                 return identifier.getValue();
             }
 
@@ -771,9 +763,9 @@ public class BranchNodeActionProvider {
                     SyntaxTreeBranchNode U12 = (SyntaxTreeBranchNode) U11.getChildren().get(1);
 
                     Object value = actionMap.get("W1").act(W1.getChildren());
-                    arguments.add(value);
                     if (value == null)
                         return null;
+                    arguments.add(value);
 
                     while (U12.getChildren().size() != 0){
                         U11 = (SyntaxTreeBranchNode) U12.getChildren().get(1);
@@ -781,6 +773,7 @@ public class BranchNodeActionProvider {
                         value = actionMap.get("W1").act(W1.getChildren());
                         if (value == null)
                             return null;
+                        arguments.add(value);
                         U12 = (SyntaxTreeBranchNode) U11.getChildren().get(1);
                     }
                 }
@@ -821,7 +814,7 @@ public class BranchNodeActionProvider {
 
                     SyntaxTreeContainer currentContainer = InterpreterContext.getCurrentContainer();
                     InterpreterContext.setCurrentContainer(functionSyntaxTreesContainer);
-                    Object returnValue =  Interpreter.interpretFunction(functionSyntaxTreesContainer);
+                    Object returnValue =  Interpreter.interpretFunctionWithReturnValue(functionSyntaxTreesContainer, ID.getToken().getLineIndexOfSourceProgram());
                     InterpreterContext.setCurrentContainer(currentContainer);
 
                     return returnValue;

@@ -1,0 +1,16 @@
+// 合法变量声明语句
+int num;
+int i = 1;
+real r = 1.9;
+bool d = true;
+string s = "hello world \n";
+int int_list [] = {1, 2, 3};
+
+println(i);
+println(r);
+println(i+r);
+println(d);
+print(s);
+println(int_list);
+println(int_list[1]);
+println(int_list[3]); // 数组越界

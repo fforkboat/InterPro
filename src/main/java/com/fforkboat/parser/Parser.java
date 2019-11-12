@@ -1,5 +1,6 @@
 package com.fforkboat.parser;
 
+import com.fforkboat.Configure;
 import com.fforkboat.common.Error;
 import com.fforkboat.parser.container.SyntaxTreeContainer;
 import com.fforkboat.parser.container.SyntaxTreeNormalContainer;
@@ -164,11 +165,16 @@ public class Parser {
         }
 
         // 判断符号栈中是否还有多余的符号
-        if (token!= null && context.getSymbolStack().size() != 0){
+        if (token != null && context.getSymbolStack().size() != 0){
             Symbol symbol = context.getSymbolStack().pop();
             if (symbol instanceof TerminalSymbol || !((NonterminalSymbol) symbol).getSymbolName().equals("S")){
-                context.getErrors().add(Error.createCompileError("Parser: unmatched symbol", token.getLineIndexOfSourceProgram()));
+                context.getErrors().add(Error.createCompileError("Parser: Existing unmatched symbols in the symbol stack", token.getLineIndexOfSourceProgram()));
             }
+        }
+
+        // 判断是否缺少}符号
+        if (token != null && context.getCurrentSyntaxTreeContainer() != rootContainer){
+            context.getErrors().add(Error.createCompileError("Parser: Missing } token.", token.getLineIndexOfSourceProgram()));
         }
 
         if (context.getErrors().size() != 0){
@@ -176,30 +182,17 @@ public class Parser {
             return null;
         }
 
-        for (Pair<ContainerTag, Integer> pair :
-                context.getAllHtmlContainers()) {
-            try(FileWriter writer = new FileWriter("output/" + pair.getValue1() + ".html")){
-                writer.write(pair.getValue0().render());
+        if (Configure.isPrintSyntaxTrees){
+            for (Pair<ContainerTag, Integer> pair :
+                    context.getAllHtmlContainers()) {
+                try(FileWriter writer = new FileWriter("SyntaxTreeContainer-" + pair.getValue1() + ".html")){
+                    writer.write(pair.getValue0().render());
+                }
             }
         }
 
+
         return rootContainer;
-    }
-
-    public static void main(String[] args) throws IOException {
-        List<Token> tokens = Scanner.scan(new File("src/test/input/b.txt"));
-//        List<Token> tokens = Scanner.scan(new File("src/test/input/a.txt"));
-//        List<Token> tokens = Scanner.scan(new File("src/test/input/a_error.txt"));
-//        List<Token> tokens = Scanner.scan(new File("src/test/input/b.txt"));
-//        List<Token> tokens = Scanner.scan(new File("src/test/input/b_error.txt"));
-//        List<Token> tokens = Scanner.scan(new File("src/test/input/c.txt"));
-//        List<Token> tokens = Scanner.scan(new File("src/test/input/c_error.txt"));
-//        List<Token> tokens = Scanner.scan(new File("src/test/input/given_test.txt"));
-
-        if (tokens != null){
-            parse(tokens);
-        }
-
     }
 
     // 从下一行开始继续尝试识别

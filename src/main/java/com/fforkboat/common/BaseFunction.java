@@ -31,6 +31,7 @@ public abstract class BaseFunction {
     }
 
     public List<DataType> getArgumentTypes() {
+        argumentTypes.toArray(new DataType[0]);
         return argumentTypes;
     }
 }

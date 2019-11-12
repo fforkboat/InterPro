@@ -1,0 +1,28 @@
+// 合法函数声明和调用语句
+
+function int add(int a, int b){
+    return a + b;
+}
+
+function string hello(){
+    return "hello";
+}
+
+function void nop(){
+    int n = 0;
+    // 函数和while语法结构结合
+    while (n < 5){
+        println("nop");
+        n = n + 1;
+        if (n == 3)
+            break;
+    }
+    print(hello()); // 函数中调用函数
+}
+
+int m = add(1, 2);
+println(m);
+
+println(hello()); // 函数的返回值作为参数
+
+nop();

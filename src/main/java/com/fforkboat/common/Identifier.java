@@ -23,7 +23,7 @@ public class Identifier {
     }
 
     public boolean setValue(Object value) {
-        if(DataType.isDataTypeMatches(dataType, value.getClass()))
+        if(!DataType.isDataTypeMatches(dataType, value.getClass()))
             return false;
 
         this.value = value;

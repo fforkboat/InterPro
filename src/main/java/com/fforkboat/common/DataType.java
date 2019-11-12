@@ -32,6 +32,6 @@ public enum DataType {
             return true;
 
         Class cls = typeClassMap.get(dataType);
-        return cls != cs;
+        return cls == cs;
     }
 }

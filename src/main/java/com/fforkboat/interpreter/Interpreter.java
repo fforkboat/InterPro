@@ -1,5 +1,6 @@
 package com.fforkboat.interpreter;
 
+import com.fforkboat.Configure;
 import com.fforkboat.common.Error;
 import com.fforkboat.parser.Parser;
 import com.fforkboat.parser.container.SyntaxTreeContainer;
@@ -14,14 +15,62 @@ import com.fforkboat.scanner.token.Token;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import org.apache.commons.cli.*;
 
 public class Interpreter {
-    public static void main(String[] args) throws IOException {
-        List<Token> tokens = Scanner.scan(new File("src/test/input/b.txt"));
-        if (tokens == null)
+    public static void main(String[] args){
+        Options options = new Options();
+
+        Option sourceFile = new Option("f", "input", true, "source file path");
+        sourceFile.setRequired(true);
+        options.addOption(sourceFile);
+
+        Option printTokens = new Option("t", "print_tokens", false, "whether to print tokens");
+        printTokens.setRequired(false);
+        options.addOption(printTokens);
+
+        Option printSyntaxTrees = new Option("s", "generate_trees", false, "whether to generate SVGs for syntax trees");
+        printSyntaxTrees.setRequired(false);
+        options.addOption(printSyntaxTrees);
+
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd;
+
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("InterPro", options);
+
             return;
-        SyntaxTreeContainer rootContainer = Parser.parse(tokens);
-        if (rootContainer == null){
+        }
+
+        if (cmd.hasOption("t")){
+            Configure.isPrintTokens = true;
+        }
+        if (cmd.hasOption("s")){
+            Configure.isPrintSyntaxTrees = true;
+        }
+
+        List<Token> tokens;
+        SyntaxTreeContainer rootContainer;
+        try {
+            tokens = Scanner.scan(new File(cmd.getOptionValue("f")));
+            if (tokens == null)
+                return;
+        }catch (IOException e){
+            System.out.println("Can not open source file.");
+            return;
+        }
+
+        try {
+            rootContainer = Parser.parse(tokens);
+            if (rootContainer == null){
+                return;
+            }
+        }catch (IOException e){
+            System.out.println("Can not generate syntax tree SVGs.");
             return;
         }
 
@@ -32,6 +81,9 @@ public class Interpreter {
     public static void interpret(SyntaxTreeContainer rootContainer){
         for (SyntaxTreeContainerComponent component:
              rootContainer.getComponents()) {
+            if (!InterpreterContext.isContinueToExecute())
+                return;
+
             // 如果是语法树，直接执行
             if (component instanceof SyntaxTreeNode){
                 BranchNodeAction action = BranchNodeActionProvider.getAction("S");
@@ -101,13 +153,11 @@ public class Interpreter {
         }
     }
 
-    static Object interpretFunction(SyntaxTreeContainer function){
-        int lineCount = -1;
+    static Object interpretFunctionWithReturnValue(SyntaxTreeContainer function, int lineCount){
         for (SyntaxTreeContainerComponent component:
                 function.getComponents()) {
             if (component instanceof SyntaxTreeNode){
                 SyntaxTreeBranchNode rootNode = (SyntaxTreeBranchNode)component;
-                lineCount = rootNode.getLineIndexOfSourceProgramOfFirstToken();
                 BranchNodeAction action = BranchNodeActionProvider.getAction("S");
 
                 Object result = action.act(rootNode.getChildren());

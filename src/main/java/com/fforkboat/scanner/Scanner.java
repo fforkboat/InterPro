@@ -1,29 +1,31 @@
 package com.fforkboat.scanner;
 
-import java.io.*;
-import java.util.*;
-
+import com.fforkboat.Configure;
 import com.fforkboat.common.Error;
 import com.fforkboat.program.ConstValueTable;
 import com.fforkboat.scanner.token.Token;
 import com.fforkboat.scanner.token.TokenFactory;
 import com.fforkboat.scanner.token.TokenType;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Scanner {
     private static String[] keywords = {"if", "else", "while", "for", "break", "continue", "int", "real", "bool", "string", "void", "true", "false", "function", "return"};
-
-    public static void main(String[] args) throws IOException {
-        Scanner.scan(new File("src/test/input/b.txt"));
-    }
 
     /**
      * @param source the source code file
      * @return the token list generated from source code. The result is null if there are errors in the source code file.
      * */
     public static List<Token> scan(File source) throws IOException {
-        ApplicationContext context = new FileSystemXmlApplicationContext("src/main/resources/META-INF/scannerContext.xml");
+        ApplicationContext context = new ClassPathXmlApplicationContext("META-INF/scannerContext.xml");
 
         State startState = (State)context.getBean("E");
 
@@ -70,7 +72,35 @@ public class Scanner {
 
                     State state = startState;
                     StringBuilder builder = new StringBuilder();
+                    boolean foundEscapeChar = false;
                     do {
+                        if (foundEscapeChar){
+                            switch (c){
+                                case 'n':
+                                    c = '\n';
+                                    break;
+                                case 't':
+                                    c = '\t';
+                                    break;
+                                case '\\':
+                                    c = '\\';
+                                    break;
+                                default:
+                                    errors.add(Error.createCompileError("Illegal escape character", rowCount));
+                            }
+                            foundEscapeChar = false;
+                        }
+                        else if (c == '\\'){
+                            foundEscapeChar = true;
+
+                            if (i == line.length() - 1){
+                                i++;
+                                break;
+                            }
+                            c = line.charAt(++i);
+                            continue;
+                        }
+
                         builder.append(c);
                         state = state.getNextState(c);
 
@@ -78,7 +108,6 @@ public class Scanner {
                             i++;
                             break;
                         }
-
                         c = line.charAt(++i);
                     }
                     while (state != null && state.canReceive(c));
@@ -142,7 +171,10 @@ public class Scanner {
             return null;
         }
 
-        System.out.println(outputTokens);
+        if (Configure.isPrintTokens){
+            System.out.println(outputTokens);
+        }
+
         return outputTokens;
     }
 }

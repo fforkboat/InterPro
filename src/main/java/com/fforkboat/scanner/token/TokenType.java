@@ -78,7 +78,7 @@ public enum TokenType implements TerminalSymbolIndicator {
             case "<>":
                 return UNEQUAL;
             default:
-                return null;
+                throw new IllegalArgumentException();
         }
     }
 

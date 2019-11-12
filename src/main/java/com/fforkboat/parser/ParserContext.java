@@ -16,6 +16,7 @@ import org.abego.treelayout.TreeLayout;
 import org.abego.treelayout.util.DefaultConfiguration;
 import org.javatuples.Pair;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import java.util.*;
@@ -55,6 +56,8 @@ public class ParserContext {
     private boolean voidReturn = false;
     private boolean inFunction = false;
 
+    private IdentifierToken recentlyAccessedIdentifier;
+
     // 符号栈
     private Stack<Symbol> symbolStack = new Stack<>();
 
@@ -67,7 +70,7 @@ public class ParserContext {
     // 语法分析过程中发现的错误
     private List<Error> errors = new ArrayList<>();
 
-    private ApplicationContext springContext = new FileSystemXmlApplicationContext("src/main/resources/META-INF/parserContext.xml");;
+    private ApplicationContext springContext = new ClassPathXmlApplicationContext("META-INF/parserContext.xml");
 
 
     DataType getDataType() {
@@ -183,6 +186,14 @@ public class ParserContext {
 
     void setVoidReturn(boolean voidReturn) {
         this.voidReturn = voidReturn;
+    }
+
+    IdentifierToken getRecentlyAccessedIdentifier() {
+        return recentlyAccessedIdentifier;
+    }
+
+    void setRecentlyAccessedIdentifier(IdentifierToken recentlyAccessedIdentifier) {
+        this.recentlyAccessedIdentifier = recentlyAccessedIdentifier;
     }
 
     ContainerTag getHtmlContainer(SyntaxTreeContainer syntaxTreeContainer){
@@ -322,7 +333,7 @@ public class ParserContext {
                 add(X);
                 add(RIGHT_BRACKET);
             }
-        }, null));
+        }, ProductionHandlerProvider.getHandler(new Pair<>("U1", "["))));
 
         NonterminalSymbol U11 = (NonterminalSymbol) springContext.getBean("U11");
         NonterminalSymbol U12 = (NonterminalSymbol) springContext.getBean("U12");

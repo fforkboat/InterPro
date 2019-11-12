@@ -1,0 +1,12 @@
+// 非法结构语句
+else {
+    int a = 1;
+}
+
+if (true) {
+    else
+        println("error!");
+
+
+while (true) {}
+

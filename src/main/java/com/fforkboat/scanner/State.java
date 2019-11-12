@@ -17,7 +17,7 @@ class State {
     // state所对应的token类型，当该状态是中间状态时，correspondingTokeType为null
     private TokenType correspondingTokeType;
     // state的状态转移信息，接收一个GeneralChar后，进入下一个state
-    private List<Pair<GeneralChar, State>> stateTransferList;
+    private List<Pair<GeneralChar, State>> stateTransferList; // 其实应该直接用map...
 
     // State的工厂类，用于创建各种state
     static class StateBuilder{
