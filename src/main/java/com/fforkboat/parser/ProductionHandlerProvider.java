@@ -318,6 +318,15 @@ public final class ProductionHandlerProvider {
             }
         });
 
+        handlerMap.put(new Pair<>("M", "["), token -> {
+            IdentifierToken identifierToken = ParserContext.getInstance().getRecentlyAccessedIdentifier();
+            SyntaxTreeContainer container = ParserContext.getInstance().getCurrentSyntaxTreeContainer();
+            if (container.getIdentifier(identifierToken.getIdentifierName()) == null){
+                ParserContext.getInstance().getErrors().add(Error.createCompileError("Parser: can not resolve symbol '" + identifierToken.getIdentifierName() + "'." , identifierToken.getLineIndexOfSourceProgram()));
+                ParserContext.getInstance().setErrorInProductionHandler(true);
+            }
+        });
+
         handlerMap.put(new Pair<>("U1", "SEMICOLON"), token -> {
             IdentifierToken identifierToken = ParserContext.getInstance().getRecentlyAccessedIdentifier();
             SyntaxTreeContainer container = ParserContext.getInstance().getCurrentSyntaxTreeContainer();

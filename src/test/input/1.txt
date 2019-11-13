@@ -1,6 +1,14 @@
 // 合法变量声明语句
+int a;
+println(a);
+//println(-1+2*3/(4-3)+(+3)-(-2)/(4 * 4 + 2)/(4/4*3)/2.0);
+
+/*
+string s = "你好";
+println(s);
 int num;
 int i = 1;
+int list[i] = {i};
 real r = 1.9;
 bool d = true;
 string s = "hello world \n";
@@ -14,3 +22,4 @@ print(s);
 println(int_list);
 println(int_list[1]);
 println(int_list[3]); // 数组越界
+*/

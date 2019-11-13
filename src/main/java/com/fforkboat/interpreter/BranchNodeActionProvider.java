@@ -43,8 +43,18 @@ public class BranchNodeActionProvider {
                         isArray = true;
                         SyntaxTreeBranchNode A3 = (SyntaxTreeBranchNode) A2.getChildren().get(1);
                         if (A3.getChildren().size() != 0){
-                            LiteralToken token = (LiteralToken) ((SyntaxTreeLeafNode)A3.getChildren().get(0)).getToken();
-                            arraySize = ConstValueTable.getConstValueTable().getInteger(token.getPointer());
+                            SyntaxTreeBranchNode W1 = (SyntaxTreeBranchNode) A3.getChildren().get(0);
+                            Object value = actionMap.get("W1").act(W1.getChildren());
+                            if (value == null)
+                                return null;
+                            if (!(value instanceof Integer)){
+                                InterpreterContext.throwError(
+                                        Error.createRuntimeError("Array size is not an integer",
+                                                branch.getLineIndexOfSourceProgramOfFirstToken())
+                                );
+                                return null;
+                            }
+                            arraySize = (int) value;
                         }
                     }
 
@@ -213,7 +223,7 @@ public class BranchNodeActionProvider {
 
                     SyntaxTreeBranchNode M = (SyntaxTreeBranchNode) children.get(1);
                     Token firstTokenOfM = ((SyntaxTreeLeafNode)M.getChildren().get(0)).getToken();
-                    // 当语句为赋值时
+                    // 当语句为变量赋值时
                     if (firstTokenOfM.getTokenType() == TokenType.ASSIGN){
                         Identifier identifier = InterpreterContext.getCurrentContainer().getIdentifier(identifierName);
 
@@ -229,6 +239,39 @@ public class BranchNodeActionProvider {
                             );
                             return null;
                         }
+                    }
+                    if (firstTokenOfM.getTokenType() == TokenType.LEFT_BRACKET){
+                        Identifier identifier = InterpreterContext.getCurrentContainer().getIdentifier(identifierName);
+                        Object[] array = (Object[]) identifier.getValue();
+
+                        SyntaxTreeBranchNode W1ForIndex = (SyntaxTreeBranchNode) M.getChildren().get(1);
+                        Object index = actionMap.get("W1").act(W1ForIndex.getChildren());
+                        if (index == null)
+                            return null;
+                        if (!(index instanceof Integer)){
+                            InterpreterContext.throwError(
+                                    Error.createRuntimeError("Array index is not an integer", leaf.getToken().getLineIndexOfSourceProgram())
+                            );
+                            return null;
+                        }
+                        if ((int) index >= array.length){
+                            InterpreterContext.throwError(
+                                    Error.createRuntimeError("Array index out of bound", leaf.getToken().getLineIndexOfSourceProgram())
+                            );
+                            return null;
+                        }
+
+                        SyntaxTreeBranchNode W1ForValue = (SyntaxTreeBranchNode) M.getChildren().get(4);
+                        Object value = actionMap.get("W1").act(W1ForValue.getChildren());
+                        if (value == null)
+                            return null;
+                        if (value.getClass() != array.getClass().getComponentType()){
+                            InterpreterContext.throwError(
+                                    Error.createRuntimeError("Incompatible value for array element", leaf.getToken().getLineIndexOfSourceProgram())
+                            );
+                            return null;
+                        }
+                        array[(int)index] = value;
                     }
                     // 当为函数调用时
                     else if (firstTokenOfM.getTokenType() == TokenType.LEFT_PARENTHESIS){
@@ -678,8 +721,15 @@ public class BranchNodeActionProvider {
 
             if (U1.getChildren().size() == 0){
                 Identifier identifier = InterpreterContext.getCurrentContainer().getIdentifier(identifierName);
+                Object value = identifier.getValue();
+                if (value == null){
+                    InterpreterContext.throwError(
+                            Error.createRuntimeError("Variable '" + identifierName + "' is not initialized", ID.getToken().getLineIndexOfSourceProgram())
+                    );
+                    return null;
+                }
 
-                return identifier.getValue();
+                return value;
             }
 
             Token firstTokenOfU1 = ((SyntaxTreeLeafNode)U1.getChildren().get(0)).getToken();

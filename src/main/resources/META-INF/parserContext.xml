@@ -674,13 +674,115 @@
                 <entry>
                     <key>
                         <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
-                            <constructor-arg value="INT_LITERAL"/>
+                            <constructor-arg value="IDENTIFIER"/>
                         </bean>
                     </key>
                     <bean class="org.javatuples.Pair">
                         <constructor-arg index="0">
                             <list>
-                                <ref bean="INT_LITERAL" />
+                                <ref bean="W1" />
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <null />
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="LEFT_PARENTHESIS"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                                <ref bean="W1" />
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <null />
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType$ClusterFeature" factory-method="valueOf">
+                            <constructor-arg value="NUMBER"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                                <ref bean="W1" />
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <null />
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="STRING_LITERAL"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                                <ref bean="W1" />
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <null />
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="BOOL_LITERAL"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                                <ref bean="W1" />
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <null />
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="ADD"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                                <ref bean="W1" />
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <null />
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="SUBTRACT"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                                <ref bean="W1" />
                             </list>
                         </constructor-arg>
                         <constructor-arg index="1">
@@ -3550,6 +3652,34 @@
                                     <bean class="org.javatuples.Pair">
                                         <constructor-arg index="0" value="M"/>
                                         <constructor-arg index="1" value="="/>
+                                    </bean>
+                                </constructor-arg>
+                            </bean>
+                        </constructor-arg>
+                    </bean>
+                </entry>
+                <entry>
+                    <key>
+                        <bean class="com.fforkboat.scanner.token.TokenType" factory-method="valueOf">
+                            <constructor-arg value="LEFT_BRACKET"/>
+                        </bean>
+                    </key>
+                    <bean class="org.javatuples.Pair">
+                        <constructor-arg index="0">
+                            <list>
+                                <ref bean="[" />
+                                <ref bean="W1" />
+                                <ref bean="]" />
+                                <ref bean="=" />
+                                <ref bean="W1" />
+                            </list>
+                        </constructor-arg>
+                        <constructor-arg index="1">
+                            <bean class="com.fforkboat.parser.ProductionHandlerProvider" factory-method="getHandler">
+                                <constructor-arg>
+                                    <bean class="org.javatuples.Pair">
+                                        <constructor-arg index="0" value="M"/>
+                                        <constructor-arg index="1" value="["/>
                                     </bean>
                                 </constructor-arg>
                             </bean>
