@@ -13,6 +13,7 @@ import com.fforkboat.scanner.token.LiteralToken;
 import com.fforkboat.scanner.token.Token;
 import com.fforkboat.scanner.token.TokenType;
 
+import java.io.DataOutputStream;
 import java.util.*;
 
 public class BranchNodeActionProvider {
@@ -325,11 +326,12 @@ public class BranchNodeActionProvider {
                             }
                         }
 
+                        // 当是内置函数时
                         if (function instanceof BuiltInFunction){
                             BuiltInFunction builtInFunction = (BuiltInFunction) function;
                             builtInFunction.call(arguments);
                         }
-                        // 当是自定义函数的时候
+                        // 当是自定义函数时
                         else{
                             CustomFunction customFunction = (CustomFunction) function;
                             SyntaxTreeContainer functionSyntaxTreesContainer = customFunction.getSyntaxTreeContainer();
@@ -524,130 +526,15 @@ public class BranchNodeActionProvider {
         });
 
         actionMap.put("X", children -> {
+            List inOrderExp = new ArrayList();
             SyntaxTreeBranchNode X1 = (SyntaxTreeBranchNode) children.get(0);
             SyntaxTreeBranchNode X2 = (SyntaxTreeBranchNode) children.get(1);
-            if (X2.getChildren().size() == 0){
-                return actionMap.get("X1").act(X1.getChildren());
-            }
-            else{
-                Object value1 = actionMap.get("X1").act(X1.getChildren());
-                Object value2 = actionMap.get("X").act(((SyntaxTreeBranchNode)X2.getChildren().get(1)).getChildren());
-                Token token = ((SyntaxTreeLeafNode)X2.getChildren().get(0)).getToken();
-                int sign;
-                if (token.getTokenType() == TokenType.ADD){
-                    sign = 1;
-                }
-                else if (token.getTokenType() == TokenType.SUBTRACT){
-                    sign = -1;
-                }
-                else{
-                    throw new IllegalStateException();
-                }
-
-                if (value1 == null || value2 == null)
-                    return null;
-
-                if (value1 instanceof Integer){
-                    if (value2 instanceof Integer)
-                        return ((Integer) value1) + sign * ((Integer) value2);
-                    if (value2 instanceof Double)
-                        return ((Integer) value1) + sign * ((Double) value2);
-                }
-
-                if (value1 instanceof Double){
-                    if (value2 instanceof Integer)
-                        return ((Double) value1) + sign * ((Integer) value2);
-                    if (value2 instanceof Double)
-                        return ((Double) value1) + sign * ((Double) value2);
-                }
-
-                InterpreterContext.throwError(Error.createRuntimeError("Illegal operands.", token.getLineIndexOfSourceProgram()));
+            boolean b1 = traversal(X1, inOrderExp);
+            boolean b2 = traversal(X2, inOrderExp);
+            if (!(b1 && b2))
                 return null;
-            }
-        });
 
-        actionMap.put("X1", children -> {
-            SyntaxTreeBranchNode X3 = (SyntaxTreeBranchNode) children.get(0);
-            SyntaxTreeBranchNode X4 = (SyntaxTreeBranchNode) children.get(1);
-            if (X4.getChildren().size() == 0){
-                return actionMap.get("X3").act(X3.getChildren());
-            }
-            else{
-                Object value1 = actionMap.get("X3").act(X3.getChildren());
-                Object value2 = actionMap.get("X1").act(((SyntaxTreeBranchNode)X4.getChildren().get(1)).getChildren());
-                Token token = ((SyntaxTreeLeafNode)X4.getChildren().get(0)).getToken();
-
-                if (value1 == null || value2 == null)
-                    return null;
-
-                if (value1 instanceof Integer){
-                    if (value2 instanceof Integer){
-                        if (token.getTokenType() == TokenType.MULTIPLY)
-                            return ((Integer) value1) * ((Integer) value2);
-                        if (token.getTokenType() == TokenType.DIVIDE){
-                            if ((Integer)value2 == 0){
-                                InterpreterContext.throwError(Error.createRuntimeError("Divisor can not be 0.", token.getLineIndexOfSourceProgram()));
-                                return null;
-                            }
-                            return ((Integer) value1) / ((Integer) value2);
-                        }
-                        else{
-                            throw new IllegalStateException();
-                        }
-
-
-                    }
-                    if (value2 instanceof Double){
-                        if (token.getTokenType() == TokenType.MULTIPLY)
-                            return ((Integer) value1) * ((Double) value2);
-                        if (token.getTokenType() == TokenType.DIVIDE){
-                            if ((Double)value2 == 0){
-                                InterpreterContext.throwError(Error.createRuntimeError("Divisor can not be 0.", token.getLineIndexOfSourceProgram()));
-                                return null;
-                            }
-                            return ((Integer) value1) / ((Double) value2);
-                        }
-                        else{
-                            throw new IllegalStateException();
-                        }
-                    }
-                }
-
-                if (value1 instanceof Double){
-                    if (value2 instanceof Integer){
-                        if (token.getTokenType() == TokenType.MULTIPLY)
-                            return ((Double) value1) * ((Integer) value2);
-                        if (token.getTokenType() == TokenType.DIVIDE){
-                            if ((Integer)value2 == 0){
-                                InterpreterContext.throwError(Error.createRuntimeError("Divisor can not be 0.", token.getLineIndexOfSourceProgram()));
-                                return null;
-                            }
-                            return ((Double) value1) / ((Integer) value2);
-                        }
-                        else{
-                            throw new IllegalStateException();
-                        }
-
-                    }
-                    if (value2 instanceof Double){
-                        if (token.getTokenType() == TokenType.MULTIPLY)
-                            return ((Double) value1) * ((Double) value2);
-                        if (token.getTokenType() == TokenType.DIVIDE){
-                            if ((Double)value2 == 0){
-                                InterpreterContext.throwError(Error.createRuntimeError("Divisor can not be 0.", token.getLineIndexOfSourceProgram()));
-                                return null;
-                            }
-                            return ((Double) value1) / ((Double) value2);
-                        }
-                        else{
-                            throw new IllegalStateException();
-                        }
-                    }
-                }
-
-                InterpreterContext.throwError(Error.createRuntimeError("Illegal operands.", token.getLineIndexOfSourceProgram()));
-                return null;
-            }
+            return calculateInorderExp(inOrderExp, X1.getLineIndexOfSourceProgramOfFirstToken());
         });
 
         actionMap.put("X3", children -> {
@@ -658,7 +545,11 @@ public class BranchNodeActionProvider {
 
                 if (token.getTokenType() == TokenType.LEFT_PARENTHESIS){
                     SyntaxTreeBranchNode X = (SyntaxTreeBranchNode) children.get(1);
-                    return actionMap.get("X").act(X.getChildren());
+                    Object value = actionMap.get("X").act(X.getChildren());
+                    if (value == null)
+                        return null;
+
+                    return value;
                 }
                 else if (token.getTokenType() == TokenType.INT_LITERAL){
                     return ConstValueTable.getConstValueTable().getInteger(((LiteralToken)token).getPointer());
@@ -691,7 +582,11 @@ public class BranchNodeActionProvider {
             }
             else{
                 SyntaxTreeBranchNode UID = (SyntaxTreeBranchNode) firstChild;
-                return actionMap.get("UID").act(UID.getChildren());
+                Object value = actionMap.get("UID").act(UID.getChildren());
+                if (value == null)
+                    return null;
+
+                return value;
             }
 
             throw new IllegalStateException();
@@ -874,6 +769,133 @@ public class BranchNodeActionProvider {
 
             return null;
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    private static boolean traversal(SyntaxTreeBranchNode branch, List exp){
+        if (branch.getName().equals("X3")){
+            Object value = actionMap.get("X3").act(branch.getChildren());
+            if (value == null)
+                return false;
+
+            if (value instanceof Integer || value instanceof Double)
+                exp.add(Number.createNumber(value));
+            else
+                exp.add(value);
+            return true;
+        }
+        else if (branch.getName().equals("X1")) {
+            boolean b1 = traversal((SyntaxTreeBranchNode) branch.getChildren().get(0), exp); // X3
+            boolean b2 = traversal((SyntaxTreeBranchNode) branch.getChildren().get(1), exp); // X4
+            return b1 && b2;
+        }
+        else if (branch.getName().equals("X2") && branch.getChildren().size() > 0){
+            TokenType operator = ((SyntaxTreeLeafNode)branch.getChildren().get(0)).getToken().getTokenType();
+            exp.add(operator);
+            SyntaxTreeBranchNode X = (SyntaxTreeBranchNode) branch.getChildren().get(1);
+            SyntaxTreeBranchNode X1 = (SyntaxTreeBranchNode) X.getChildren().get(0);
+            SyntaxTreeBranchNode X2 = (SyntaxTreeBranchNode) X.getChildren().get(1);
+            boolean b1 = traversal(X1, exp);
+            boolean b2 = traversal(X2, exp);
+            return b1 && b2;
+        }
+        else if (branch.getName().equals("X4") && branch.getChildren().size() > 0){
+            TokenType operator = ((SyntaxTreeLeafNode)branch.getChildren().get(0)).getToken().getTokenType();
+            exp.add(operator);
+            SyntaxTreeBranchNode X1 = (SyntaxTreeBranchNode) branch.getChildren().get(1);
+            return traversal(X1, exp);
+        }
+
+        return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Object calculateInorderExp(List inOrderExp, int lineCount){
+        List postOrderExp = new ArrayList();
+        Stack<TokenType> operators = new Stack<>();
+        for (Object element :
+                inOrderExp) {
+            if (element instanceof TokenType){
+                TokenType operator = (TokenType) element;
+                switch (operator){
+                    case ADD:
+                    case SUBTRACT:
+                        while (operators.size() != 0){
+                            postOrderExp.add(operators.pop());
+                        }
+                        operators.push(operator);
+                        break;
+                    case MULTIPLY:
+                    case DIVIDE:
+                        if (operators.size() != 0){
+                            TokenType topOperator = operators.peek();
+                            if (topOperator == TokenType.MULTIPLY || topOperator == TokenType.DIVIDE){
+                                postOrderExp.add(operators.pop());
+                            }
+                        }
+                        operators.push(operator);
+                        break;
+                    default:
+                        throw new IllegalStateException();
+                }
+
+            }
+            else {
+                postOrderExp.add(element);
+            }
+        }
+        while (operators.size() != 0){
+            postOrderExp.add(operators.pop());
+        }
+
+        Stack operands = new Stack();
+        for (Object element :
+                postOrderExp) {
+            if (element instanceof TokenType){
+                TokenType operator = (TokenType) element;
+                if (!(operands.peek() instanceof Number)){
+                    InterpreterContext.throwError(Error.createRuntimeError("Illegal operand.", lineCount));
+                    return null;
+                }
+                Number op2 = (Number) operands.pop();
+                if (!(operands.peek() instanceof Number)){
+                    InterpreterContext.throwError(Error.createRuntimeError("Illegal operand.", lineCount));
+                    return null;
+                }
+                Number op1 = (Number) operands.pop();
+
+                switch (operator){
+                    case ADD:
+                        operands.push(Number.add(op1, op2));
+                        break;
+                    case SUBTRACT:
+                        operands.push(Number.subtract(op1, op2));
+                        break;
+                    case MULTIPLY:
+                        operands.push(Number.multiply(op1, op2));
+                        break;
+                    case DIVIDE:
+                        Number value = Number.divide(op1, op2);
+                        if (value == null){
+                            InterpreterContext.throwError(Error.createRuntimeError("Divisor can not be 0.", lineCount));
+                            return null;
+                        }
+                        operands.push(value);
+                        break;
+                    default:
+                        throw new IllegalStateException();
+                }
+            }
+            else{
+                operands.push(element);
+            }
+        }
+
+        Object operand = operands.pop();
+        if (operand instanceof Number)
+            return ((Number)operand).getValue();
+        else
+            return operand;
     }
 
 }

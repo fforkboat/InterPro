@@ -1,8 +1,20 @@
-// 合法变量声明语句
-int a;
-println(a);
-//println(-1+2*3/(4-3)+(+3)-(-2)/(4 * 4 + 2)/(4/4*3)/2.0);
+int size = 6;
+int array[size] = {1, 7};
+if (array[0] < array[1]){
+	println("array[0] < array[1]");
+	while(true){
 
+		array[0] = array[0] + 1; // 更新数组
+		if (array[0] == 3)
+			continue;
+
+		print("array[0] = "); print(array[0]);print("  array[1] = ");println(array[1]);
+
+		if (array[0] >= array[1])
+			break; // break语句
+	}
+}
+println("-----------测试3结束-----------");
 /*
 string s = "你好";
 println(s);

@@ -112,10 +112,14 @@ public class Interpreter {
                             InterpreterContext.setContinueToExecute(true);
                             InterpreterContext.setEncounterContinue(false);
                         }
-                        if (InterpreterContext.isEncounterBreak()){
+                        else if (InterpreterContext.isEncounterBreak()){
                             InterpreterContext.setContinueToExecute(true);
                             InterpreterContext.setEncounterBreak(false);
                             break;
+                        }
+                        // 遇见错误了
+                        else if (!InterpreterContext.isContinueToExecute()){
+                            return;
                         }
                         result = isPredicateTrue(whileContainer.getPredicate());
                         if (result == null)
@@ -163,6 +167,7 @@ public class Interpreter {
                 Object result = action.act(rootNode.getChildren());
                 if (!InterpreterContext.isContinueToExecute())
                     return null;
+
                 if (result != null)
                     return result;
             }
